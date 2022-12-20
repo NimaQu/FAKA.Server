@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using faka.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace faka.Data
 {
-    public class fakaContext : DbContext
+    public class fakaContext : IdentityDbContext<IdentityUser>
     {
-        public fakaContext (DbContextOptions<fakaContext> options)
-            : base(options)
+        public fakaContext (DbContextOptions<fakaContext> options): base(options)
         {
         }
 

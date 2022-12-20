@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
 using faka.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace faka.Controllers
 {
@@ -33,7 +34,7 @@ namespace faka.Controllers
         }
 
         // GET: api/Products/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             if (_context.Product == null)
@@ -52,7 +53,7 @@ namespace faka.Controllers
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
             if (id != product.Id)
@@ -83,7 +84,7 @@ namespace faka.Controllers
 
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             if (_context.Product == null)
@@ -97,7 +98,7 @@ namespace faka.Controllers
         }
 
         // DELETE: api/Products/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (_context.Product == null)
