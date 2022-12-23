@@ -6,18 +6,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using faka.Filters;
 
 namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticateController : ControllerBase
+    [CustomResultFilter]
+    public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthenticateController(
+        public AuthController(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration)
@@ -32,7 +34,7 @@ namespace faka.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password)) return Unauthorized();
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password)) return Unauthorized("Invalid username or password");
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>
@@ -46,11 +48,7 @@ namespace faka.Controllers
             //add token to header
             Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
 
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo
-            });
+            return Ok();
         }
 
         [HttpPost]
@@ -59,7 +57,7 @@ namespace faka.Controllers
         {
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+                return BadRequest("User already exists!");
 
             IdentityUser user = new()
             {

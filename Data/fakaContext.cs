@@ -16,5 +16,9 @@ namespace faka.Data
         }
 
         public DbSet<faka.Models.Product> Product { get; set; } = default!;
+
+        public DbSet<faka.Models.Key> Key { get; set; } = default!;
+
+        public DbSet<faka.Models.Bought> Bought { get; set; } = default!;
     }
 }

@@ -11,8 +11,6 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; // copy from https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
-
 // Add services to the container.
 
 // For Entity Framework
@@ -84,9 +82,11 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddCors(options => // copy from https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
+// adding cors https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
+const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(name: myAllowSpecificOrigins,
         policy  =>
         {
             policy.WithOrigins("*");
@@ -102,7 +102,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(myAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

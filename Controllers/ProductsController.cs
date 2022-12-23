@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
+using faka.Filters;
 using faka.Models;
 using Microsoft.AspNetCore.Authorization;
 
@@ -13,6 +14,7 @@ namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomResultFilter]
     public class ProductsController : ControllerBase
     {
         private readonly fakaContext _context;
