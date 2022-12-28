@@ -9,6 +9,7 @@ using faka.Data;
 using faka.Filters;
 using faka.Models;
 using Microsoft.AspNetCore.Authorization;
+using NuGet.Protocol;
 
 namespace faka.Controllers
 {
@@ -32,7 +33,9 @@ namespace faka.Controllers
             {
                 return NotFound();
             }
-            return await _context.Product.ToListAsync();
+            var products = await _context.Product.ToListAsync();
+            var result = products.Select(product => product.ToJson()).ToList();
+            return Ok(result);
         }
 
         // GET: api/Products/5

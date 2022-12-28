@@ -26,6 +26,9 @@ public class CustomResultFilterAttribute  : ResultFilterAttribute
                     case 401:
                         if (result.Value != null) message = result.Value.ToString() ?? "Unauthorized";
                         break;
+                    case 500:
+                        if (result.Value != null) message = result.Value.ToString() ?? "Internal Server Error";
+                        break;
                     default:
                         message = "记得提醒我少写了个 case";
                         break;

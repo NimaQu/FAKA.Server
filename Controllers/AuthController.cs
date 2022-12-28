@@ -33,12 +33,14 @@ namespace faka.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
+            if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password)) return Unauthorized("Invalid username or password");
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
@@ -55,6 +57,7 @@ namespace faka.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
+            if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return BadRequest("User already exists!");
@@ -66,16 +69,17 @@ namespace faka.Controllers
                 UserName = model.Username
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            return !result.Succeeded ? StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." }) : Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            return !result.Succeeded ? StatusCode(StatusCodes.Status500InternalServerError, "User create failed") : Ok("Account created successfully!");
         }
 
         [HttpPost]
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
+            if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+                return StatusCode(StatusCodes.Status500InternalServerError, "Account already exists!");
 
             IdentityUser user = new()
             {
@@ -85,7 +89,7 @@ namespace faka.Controllers
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                return StatusCode(StatusCodes.Status500InternalServerError, "User create failed");
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
@@ -100,7 +104,7 @@ namespace faka.Controllers
             {
                 await _userManager.AddToRoleAsync(user, UserRoles.User);
             }
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            return Ok("Account created successfully!");
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)

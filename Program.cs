@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using faka.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
+using faka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using faka.Auth;
@@ -19,6 +22,7 @@ builder.Services.AddDbContext<fakaContext>(options =>
 
 // For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=> {
+        //password settings
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 4;
         options.Password.RequireNonAlphanumeric = false;
@@ -92,6 +96,9 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("*");
         });
 });
+
+//add automapper
+builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
 var app = builder.Build();
 

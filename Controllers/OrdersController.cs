@@ -1,47 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
 using faka.Filters;
 using faka.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using faka.Models.DTO;
 
 namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [CustomResultFilter]
-    public class BoughtsController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private readonly fakaContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public BoughtsController(fakaContext context)
+        public OrdersController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
         {
+            // 依赖注入
             _context = context;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: api/Boughts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bought>>> GetBought()
+        [HttpGet, Authorize(Roles = "User")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetBought()
         {
-            if (_context.Bought == null)
-            {
-                return NotFound();
-            }
-            return await _context.Bought.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var user = await _userManager.GetUserAsync(User);
+            //var roles = await _userManager.GetRolesAsync(user);
+            // if (User.IsInRole("Admin"))
+            // {
+            //     return await _context.Bought.ToListAsync();
+            // }
+            System.Console.WriteLine(userId);
+            var orders = await _context.Bought.Where(b => b.UserId == userId).ToListAsync();
+            var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
+            return Ok(orderDtos);
         }
 
         // GET: api/Boughts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bought>> GetBought(int id)
+        public async Task<ActionResult<Order>> GetBought(int id)
         {
             if (_context.Bought == null)
             {
                 return NotFound();
             }
+
             var bought = await _context.Bought.FindAsync(id);
 
             if (bought == null)
@@ -55,14 +67,14 @@ namespace faka.Controllers
         // PUT: api/Boughts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBought(int id, Bought bought)
+        public async Task<IActionResult> PutBought(int id, Order order)
         {
-            if (id != bought.Id)
+            if (id != order.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(bought).State = EntityState.Modified;
+            _context.Entry(order).State = EntityState.Modified;
 
             try
             {
@@ -86,16 +98,17 @@ namespace faka.Controllers
         // POST: api/Boughts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Bought>> PostBought(Bought bought)
+        public async Task<ActionResult<Order>> PostBought(Order order)
         {
             if (_context.Bought == null)
             {
                 return Problem("Entity set 'fakaContext.Bought'  is null.");
             }
-            _context.Bought.Add(bought);
+
+            _context.Bought.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBought", new { id = bought.Id }, bought);
+            return CreatedAtAction("GetBought", new { id = order.Id }, order);
         }
 
         // DELETE: api/Boughts/5
@@ -106,6 +119,7 @@ namespace faka.Controllers
             {
                 return NotFound();
             }
+
             var bought = await _context.Bought.FindAsync(id);
             if (bought == null)
             {
