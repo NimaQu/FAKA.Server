@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
+using faka.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
@@ -29,42 +30,37 @@ namespace faka.Controllers
         }
 
         // GET: api/Orders
-        [HttpGet, Authorize(Roles = "User")]
+        [HttpGet, Authorize(Roles = Roles.User)]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrder()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.GetUserAsync(User);
-            var roles = await _userManager.GetRolesAsync(user);
-             if (User.IsInRole("Admin"))
+             if (User.IsInRole(Roles.Admin))
              {
                  return await _context.Order.ToListAsync();
              }
             var orders = await _context.Order.Where(b => b.UserId == userId).ToListAsync();
-            foreach (var order in orders)
-            {
-                Console.WriteLine(order.Product.Name);
-            }
             var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
             return Ok(orderDtos);
         }
 
         // GET: api/Orders/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize(Roles = Roles.User)]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-            if (_context.Order == null)
-            {
-                return NotFound();
-            }
-
+            Console.WriteLine("---------------------------------------------------------------");
+            Console.WriteLine(User.IsInRole(Roles.User));
             var order = await _context.Order.FindAsync(id);
-
-            if (order == null)
+            if (User.IsInRole("Admin"))
+            {
+                return Ok(order);
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (order.UserId != userId)
             {
                 return NotFound();
             }
-
-            return order;
+            var orderDto = _mapper.Map<OrderDto>(order);
+            return Ok(orderDto);
         }
 
         // PUT: api/Orders/5

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace faka.Models;
 
-[Table("Orders")]
 public class Order
 {
     [Key]
@@ -17,7 +17,10 @@ public class Order
     public decimal Price { get; set; }
 
     public int ProductId { get; set; }
+    [JsonIgnore]
     public virtual Product Product { get; set; } = null!;
     public string? UserId { get; set; }
+    
+    [JsonIgnore]
     public virtual IdentityUser? User { get; set; }
 }

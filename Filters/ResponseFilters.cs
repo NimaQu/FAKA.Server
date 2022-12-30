@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using NuGet.Protocol.Plugins;
 
 namespace faka.Filters;
 
@@ -8,77 +9,54 @@ public class CustomResultFilterAttribute  : ResultFilterAttribute
 {
     public override void OnResultExecuting(ResultExecutingContext context)
     {
-        //很傻逼的写法等一个有缘人重构
-        switch (context.Result)
-        {
-            case ObjectResult result:
-            {
-                var statusCode = result.StatusCode;
-                var message = string.Empty;
-                switch (statusCode)
-                {
-                    case 200:
-                        message = "0";
-                        break;
-                    case 400:
-                        if (result.Value != null) message = result.Value.ToString() ?? "Bad Request";
-                        break;
-                    case 401:
-                        if (result.Value != null) message = result.Value.ToString() ?? "Unauthorized";
-                        break;
-                    case 500:
-                        if (result.Value != null) message = result.Value.ToString() ?? "Internal Server Error";
-                        break;
-                    default:
-                        message = "记得提醒我少写了个 case";
-                        break;
-                }
-            
-                if (statusCode == 200)
-                {
-                    context.Result = new JsonResult(new
-                    {
-                        code = 0,
-                        message = message,
-                        data = result.Value
-                    });
-                }
-                else
-                {
-                    context.Result = new JsonResult(new
-                    {
-                        code = statusCode,
-                        message = message,
-                        data = new {}
-                    });
-                }
+        // 获取响应结果
+        var result = context.Result;
+        var message = string.Empty;
 
-                break;
-            }
+        switch (result)
+        {
             case StatusCodeResult statusCodeResult:
             {
-                var statusCode = statusCodeResult.StatusCode;
-                var message = statusCode switch
+                // 如果是 StatusCodeResult，将其转换为 ApiResponse
+                var apiResponse = new ResponseModel
                 {
-                    200 => "0",
-                    400 => "Bad Request",
-                    401 => "Unauthorized",
-                    _ => "记得提醒我少写了个 case"
+                    Code = statusCodeResult.StatusCode,
+                    Message = message
                 };
-                if (statusCode == 200) statusCode = 0;
+
+                context.Result = new JsonResult(apiResponse);
+                break;
+            }
+            case ObjectResult objectResult:
+            {
+                var code = objectResult.StatusCode ?? StatusCodes.Status500InternalServerError;
+                var data = objectResult.Value;
+                if (code != StatusCodes.Status200OK)
                 {
-                    context.Result = new JsonResult(new
-                    {
-                        code = statusCode,
-                        message = message,
-                        data = new {}
-                    });
+                    message = objectResult.Value?.ToString() ?? string.Empty;
+                    data = new {};
                 }
+                var apiResponse = new ResponseModel
+                {
+                    Code = objectResult.StatusCode.GetValueOrDefault(),
+                    Message = message,
+                    Data = data ?? new {}
+                };
+
+                context.Result = new JsonResult(apiResponse);
                 break;
             }
             default:
-                base.OnResultExecuting(context);
+            {
+                var response = new ResponseModel
+                {
+                    Code = 233,
+                    Message = "未知错误",
+                    Data = new {}
+                };
+                context.Result = new JsonResult(response);
                 break;
+            }
         }
     }
 }

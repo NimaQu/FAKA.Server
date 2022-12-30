@@ -1,6 +1,6 @@
 ﻿namespace faka.Auth
 {
-    public class UserRoles
+    public abstract class Roles
     {
         public const string Admin = "Admin";
         public const string User = "User";

@@ -69,11 +69,18 @@ namespace faka.Controllers
                 UserName = model.Username
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            return !result.Succeeded ? StatusCode(StatusCodes.Status500InternalServerError, "User create failed") : Ok("Account created successfully!");
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
+            //发送验证邮件
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Auth", new {code = code}, protocol: HttpContext.Request.Scheme);
+            // dev only
+            return Ok(code);
         }
 
         [HttpPost]
         [Route("register-admin")]
+        // dev only
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
         {
             if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
@@ -91,20 +98,30 @@ namespace faka.Controllers
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, "User create failed");
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            {
-                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-            }
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            {
-                await _userManager.AddToRoleAsync(user, UserRoles.User);
-            }
+            if (!await _roleManager.RoleExistsAsync(Roles.Admin))
+                await _roleManager.CreateAsync(new IdentityRole(Roles.Admin));
+            if (!await _roleManager.RoleExistsAsync(Roles.User))
+                await _roleManager.CreateAsync(new IdentityRole(Roles.User));
+            if (await _roleManager.RoleExistsAsync(Roles.Admin))
+                await _userManager.AddToRoleAsync(user, Roles.Admin);
+            if (await _roleManager.RoleExistsAsync(Roles.User))
+                await _userManager.AddToRoleAsync(user, Roles.User);
             return Ok("Account created successfully!");
+        }
+        
+        [HttpGet]
+        [Route("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string code)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("请先登录");
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            Console.WriteLine(result.Errors);
+            if (!result.Succeeded) return BadRequest("链接无效或已过期");
+            if (await _roleManager.RoleExistsAsync(Roles.User))
+                await _userManager.AddToRoleAsync(user, Roles.User);
+            return Ok("邮箱验证成功");
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)

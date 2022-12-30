@@ -19,11 +19,4 @@ public class Product
     public bool IsEnabled { get; set; } = true;
     public bool IsHidden { get; set; } = false;
     public int Stock { get; set; }
-    
-    public string? ToJson()
-    {
-        var options = new JsonSerializerOptions { IgnoreReadOnlyProperties = true };
-        var json = JsonSerializer.Serialize(this, options);
-        return json;
-    }
 }
