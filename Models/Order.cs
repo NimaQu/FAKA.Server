@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace faka.Models;
 
+[Table("Orders")]
 public class Order
 {
     [Key]

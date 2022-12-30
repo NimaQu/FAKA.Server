@@ -28,46 +28,49 @@ namespace faka.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/Boughts
+        // GET: api/Orders
         [HttpGet, Authorize(Roles = "User")]
-        public async Task<ActionResult<IEnumerable<Order>>> GetBought()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrder()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var user = await _userManager.GetUserAsync(User);
-            //var roles = await _userManager.GetRolesAsync(user);
-            // if (User.IsInRole("Admin"))
-            // {
-            //     return await _context.Bought.ToListAsync();
-            // }
-            System.Console.WriteLine(userId);
-            var orders = await _context.Bought.Where(b => b.UserId == userId).ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+             if (User.IsInRole("Admin"))
+             {
+                 return await _context.Order.ToListAsync();
+             }
+            var orders = await _context.Order.Where(b => b.UserId == userId).ToListAsync();
+            foreach (var order in orders)
+            {
+                Console.WriteLine(order.Product.Name);
+            }
             var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
             return Ok(orderDtos);
         }
 
-        // GET: api/Boughts/5
+        // GET: api/Orders/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetBought(int id)
+        public async Task<ActionResult<Order>> GetOrder(int id)
         {
-            if (_context.Bought == null)
+            if (_context.Order == null)
             {
                 return NotFound();
             }
 
-            var bought = await _context.Bought.FindAsync(id);
+            var order = await _context.Order.FindAsync(id);
 
-            if (bought == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return bought;
+            return order;
         }
 
-        // PUT: api/Boughts/5
+        // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBought(int id, Order order)
+        public async Task<IActionResult> PutOrder(int id, Order order)
         {
             if (id != order.Id)
             {
@@ -82,7 +85,7 @@ namespace faka.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BoughtExists(id))
+                if (!OrderExists(id))
                 {
                     return NotFound();
                 }
@@ -95,46 +98,46 @@ namespace faka.Controllers
             return NoContent();
         }
 
-        // POST: api/Boughts
+        // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Order>> PostBought(Order order)
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
-            if (_context.Bought == null)
+            if (_context.Order == null)
             {
-                return Problem("Entity set 'fakaContext.Bought'  is null.");
+                return Problem("Entity set 'fakaContext.Order'  is null.");
             }
 
-            _context.Bought.Add(order);
+            _context.Order.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBought", new { id = order.Id }, order);
+            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
         }
 
-        // DELETE: api/Boughts/5
+        // DELETE: api/Orders/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBought(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
-            if (_context.Bought == null)
+            if (_context.Order == null)
             {
                 return NotFound();
             }
 
-            var bought = await _context.Bought.FindAsync(id);
-            if (bought == null)
+            var order = await _context.Order.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            _context.Bought.Remove(bought);
+            _context.Order.Remove(order);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool BoughtExists(int id)
+        private bool OrderExists(int id)
         {
-            return (_context.Bought?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Order?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
