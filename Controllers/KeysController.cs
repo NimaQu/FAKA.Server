@@ -13,7 +13,6 @@ namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [CustomResultFilter]
     public class KeysController : ControllerBase
     {
         private readonly fakaContext _context;

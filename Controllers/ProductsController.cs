@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using faka.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,21 +10,27 @@ using Microsoft.EntityFrameworkCore;
 using faka.Data;
 using faka.Filters;
 using faka.Models;
+using faka.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol;
 
 namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [CustomResultFilter]
     public class ProductsController : ControllerBase
     {
         private readonly fakaContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public ProductsController(fakaContext context)
+        public ProductsController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
         {
+            // 依赖注入
             _context = context;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: api/Products
@@ -34,9 +41,10 @@ namespace faka.Controllers
             {
                 return NotFound();
             }
-            var products = await _context.Product.ToListAsync();
-            var result = products.Select(product => product.ToJson()).ToList();
-            return Ok(result);
+            //only get the products that are not disabled and hidden
+            var products = await _context.Product.Where(p => p.IsEnabled == true && p.IsHidden == false).ToListAsync();
+            var productDtos = _mapper.Map<List<ProductDto>>(products);
+            return Ok(productDtos);
         }
 
         // GET: api/Products/5

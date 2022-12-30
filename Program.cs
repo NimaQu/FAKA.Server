@@ -9,6 +9,8 @@ using faka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using faka.Auth;
+using faka.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +57,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+// adding controllers
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomResultFilterAttribute>();
+});
+
+//add singleton
+builder.Services.AddSingleton<
+    IAuthorizationMiddlewareResultHandler, AuthMiddlewareResultHandler>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>

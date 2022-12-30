@@ -7,12 +7,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using faka.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [CustomResultFilter]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -36,17 +36,8 @@ namespace faka.Controllers
             if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password)) return Unauthorized("Invalid username or password");
-            var userRoles = await _userManager.GetRolesAsync(user);
 
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
-
-            var token = GetToken(authClaims);
+            var token = await GetJwtToken(user);
             //add token to header
             Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
 
@@ -73,7 +64,10 @@ namespace faka.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
             //发送验证邮件
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action("ConfirmEmail", "Auth", new {code = code}, protocol: HttpContext.Request.Scheme);
+            //var callbackUrl = Url.Action("ConfirmEmail", "Auth", new {code = code}, protocol: HttpContext.Request.Scheme);
+            var token = await GetJwtToken(user);
+            //add token to header
+            Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
             // dev only
             return Ok(code);
         }
@@ -109,7 +103,7 @@ namespace faka.Controllers
             return Ok("Account created successfully!");
         }
         
-        [HttpGet]
+        [HttpPost, Authorize]
         [Route("confirm-email")]
         public async Task<IActionResult> ConfirmEmail(string code)
         {
@@ -121,12 +115,25 @@ namespace faka.Controllers
             if (!result.Succeeded) return BadRequest("链接无效或已过期");
             if (await _roleManager.RoleExistsAsync(Roles.User))
                 await _userManager.AddToRoleAsync(user, Roles.User);
+            // 因为是邮箱验证，所以直接登录并且更新token，因为未确认邮箱没有 User 这个 Role
+            var token = await GetJwtToken(user);
+            //add token to header
+            Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
             return Ok("邮箱验证成功");
         }
 
-        private JwtSecurityToken GetToken(List<Claim> authClaims)
+        private async Task<JwtSecurityToken> GetJwtToken(IdentityUser user)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new (ClaimTypes.NameIdentifier, user.Id),
+                new (ClaimTypes.Name, user.UserName ?? string.Empty),
+                new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]?? "defaultSecret"));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],

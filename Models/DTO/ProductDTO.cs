@@ -7,7 +7,5 @@ public class ProductDto
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public int CategoryId { get; set; }
-    public bool IsEnabled { get; set; } = true;
-    public bool IsHidden { get; set; } = false;
     public int Stock { get; set; }
 }

@@ -14,7 +14,6 @@ namespace faka.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [CustomResultFilter]
     public class OrdersController : ControllerBase
     {
         private readonly fakaContext _context;
@@ -50,7 +49,7 @@ namespace faka.Controllers
             Console.WriteLine("---------------------------------------------------------------");
             Console.WriteLine(User.IsInRole(Roles.User));
             var order = await _context.Order.FindAsync(id);
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(Roles.Admin))
             {
                 return Ok(order);
             }
