@@ -18,7 +18,7 @@ public class Key
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime UpdatedAt { get; set; }
     
-    public int? ProductId { get; set; }
+    public int ProductId { get; set; }
     [JsonIgnore]
     public virtual Product? Product { get; set; }
 }

@@ -64,7 +64,7 @@ namespace faka.Controllers
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> PutOrder(int id, Order order)
         {
             if (id != order.Id)
@@ -95,12 +95,12 @@ namespace faka.Controllers
 
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             if (_context.Order == null)
             {
-                return Problem("Entity set 'fakaContext.Order'  is null.");
+                return BadRequest("商品不存在");
             }
 
             _context.Order.Add(order);
@@ -110,7 +110,7 @@ namespace faka.Controllers
         }
 
         // DELETE: api/Orders/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             if (_context.Order == null)

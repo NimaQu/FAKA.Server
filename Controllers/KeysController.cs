@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using faka.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
 using faka.Filters;
 using faka.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace faka.Controllers
 {
@@ -23,7 +25,7 @@ namespace faka.Controllers
         }
 
         // GET: api/Keys
-        [HttpGet]
+        [HttpGet, Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<IEnumerable<Key>>> GetKey()
         {
             if (_context.Key == null)
@@ -34,7 +36,7 @@ namespace faka.Controllers
         }
 
         // GET: api/Keys/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize(Roles = Roles.User)]
         public async Task<ActionResult<Key>> GetKey(int id)
         {
             if (_context.Key == null)
@@ -53,7 +55,7 @@ namespace faka.Controllers
 
         // PUT: api/Keys/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> PutKey(int id, Key key)
         {
             if (id != key.Id)
@@ -84,7 +86,7 @@ namespace faka.Controllers
 
         // POST: api/Keys
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Key>> PostKey(Key key)
         {
             if (_context.Key == null)
@@ -98,7 +100,7 @@ namespace faka.Controllers
         }
 
         // DELETE: api/Keys/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteKey(int id)
         {
             if (_context.Key == null)

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace faka.Models;
@@ -19,4 +18,9 @@ public class Product
     public bool IsEnabled { get; set; } = true;
     public bool IsHidden { get; set; } = false;
     public int Stock { get; set; }
+    
+    [JsonIgnore]
+    public virtual List<Order>? Orders { get; set; }
+    [JsonIgnore]
+    public virtual List<Key>? Keys { get; set; }
 }
