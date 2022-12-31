@@ -6,6 +6,10 @@
     },
     "apis1": {
       "type": "apis"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:azuresql"
     }
   }
 }
