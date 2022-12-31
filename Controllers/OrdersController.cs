@@ -4,11 +4,10 @@ using faka.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using faka.Data;
-using faka.Filters;
 using faka.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using faka.Models.DTO;
+using faka.Models.Dtos;
 
 namespace faka.Controllers
 {
@@ -30,25 +29,27 @@ namespace faka.Controllers
 
         // GET: api/Orders
         [HttpGet, Authorize(Roles = Roles.User)]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrder()
+        public async Task<ActionResult<IEnumerable<OrderOutDto>>> GetOrder()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
              if (User.IsInRole(Roles.Admin))
              {
-                 return await _context.Order.ToListAsync();
+                 return Ok(await _context.Order.ToListAsync());
              }
             var orders = await _context.Order.Where(b => b.UserId == userId).ToListAsync();
-            var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
+            var orderDtos = _mapper.Map<IEnumerable<OrderOutDto>>(orders);
             return Ok(orderDtos);
         }
 
         // GET: api/Orders/5
         [HttpGet("{id}"), Authorize(Roles = Roles.User)]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        public async Task<ActionResult<OrderOutDto>> GetOrder(int id)
         {
-            Console.WriteLine("---------------------------------------------------------------");
-            Console.WriteLine(User.IsInRole(Roles.User));
             var order = await _context.Order.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
             if (User.IsInRole(Roles.Admin))
             {
                 return Ok(order);
@@ -58,20 +59,21 @@ namespace faka.Controllers
             {
                 return NotFound();
             }
-            var orderDto = _mapper.Map<OrderDto>(order);
+            var orderDto = _mapper.Map<OrderOutDto>(order);
             return Ok(orderDto);
         }
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}"), Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutOrder(int id, OrderInDto orderInDto)
         {
-            if (id != order.Id)
+            var order = await _context.Order.FindAsync(id);
+            if (order == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
+            _mapper.Map(orderInDto, order);
             _context.Entry(order).State = EntityState.Modified;
 
             try
@@ -82,52 +84,54 @@ namespace faka.Controllers
             {
                 if (!OrderExists(id))
                 {
-                    return NotFound();
+                    return BadRequest("订单不存在");
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost, Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult> PostOrder(OrderInDto orderInDto)
         {
-            if (_context.Order == null)
+            if (orderInDto.UserId != null)
+            {
+                var user = await _userManager.FindByIdAsync(orderInDto.UserId);
+                if (user == null)
+                {
+                    return BadRequest("用户不存在");
+                }
+            }
+            var product = await _context.Product.FindAsync(orderInDto.ProductId);
+            if (product == null)
             {
                 return BadRequest("商品不存在");
             }
-
+            var order = _mapper.Map<Order>(orderInDto);
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            return Ok();
         }
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}"), Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<ActionResult> DeleteOrder(int id)
         {
-            if (_context.Order == null)
-            {
-                return NotFound();
-            }
 
             var order = await _context.Order.FindAsync(id);
             if (order == null)
             {
-                return NotFound();
+                return NotFound("订单不存在");
             }
 
             _context.Order.Remove(order);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool OrderExists(int id)

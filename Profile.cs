@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using faka.Models;
-using faka.Models.DTO;
+using faka.Models.Dtos;
 
 namespace faka;
 
@@ -8,9 +8,14 @@ public class OrganizationProfile : Profile
 {
     public OrganizationProfile()
     {
-        CreateMap<Order, OrderDto>().ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name)).ForAllMembers(opt => opt.Ignore());
-        CreateMap<Product, ProductDto>().ForAllMembers(opt => opt.Ignore());
-        CreateMap<Key, KeyDto>().ForAllMembers(opt => opt.Ignore());
+        CreateMap<Order, OrderOutDto>().ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name)).ForAllMembers(opt => opt.UseDestinationValue());
+        CreateMap<OrderInDto, Order>();
+        
+        CreateMap<Product, ProductOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
+        CreateMap<ProductInDto, Product>();
+        
+        CreateMap<Key, KeyOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
+        CreateMap<KeyInDto, Key>().ForAllMembers(opt => opt.UseDestinationValue());
         // Use CreateMap... Etc.. here (Profile methods are the same as configuration methods)
     }
 }

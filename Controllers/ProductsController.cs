@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using faka.Auth;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using faka.Data;
-using faka.Filters;
 using faka.Models;
-using faka.Models.DTO;
+using faka.Models.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using NuGet.Protocol;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace faka.Controllers
 {
@@ -35,45 +28,40 @@ namespace faka.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
+        public async Task<ActionResult<IEnumerable<ProductOutDto>>> GetProduct()
         {
-            if (_context.Product == null)
-            {
-                return NotFound();
-            }
             //only get the products that are not disabled and hidden
             var products = await _context.Product.Where(p => p.IsEnabled == true && p.IsHidden == false).ToListAsync();
-            var productDtos = _mapper.Map<List<ProductDto>>(products);
+            var productDtos = _mapper.Map<List<ProductOutDto>>(products);
             return Ok(productDtos);
         }
 
         // GET: api/Products/5
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<ProductOutDto>> GetProduct(int id)
         {
-            if (_context.Product == null)
-            {
-                return NotFound();
-            }
             var product = await _context.Product.FindAsync(id);
 
             if (product == null)
             {
-                return NotFound();
+                return NotFound("产品不存在");
             }
+            var productOutDto = _mapper.Map<ProductOutDto>(product);
 
-            return product;
+            return Ok(productOutDto);
         }
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id:int}"), Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        public async Task<ActionResult> PutProduct(int id, ProductInDto productInDto)
         {
-            if (id != product.Id)
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
             {
-                return BadRequest();
+                return NotFound("产品不存在");
             }
+            _mapper.Map(productInDto, product);
 
             _context.Entry(product).State = EntityState.Modified;
 
@@ -87,38 +75,28 @@ namespace faka.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost, Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult> PostProduct(ProductInDto productInDto)
         {
-            if (_context.Product == null)
-            {
-                return Problem("Entity set 'fakaContext.Product'  is null.");
-            }
+            var product = _mapper.Map<Product>(productInDto);
             _context.Product.Add(product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            return Ok();
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id:int}"), Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            if (_context.Product == null)
-            {
-                return NotFound();
-            }
             var product = await _context.Product.FindAsync(id);
             if (product == null)
             {
