@@ -36,7 +36,7 @@ namespace faka.Controllers
              {
                  return Ok(await _context.Order.ToListAsync());
              }
-            var orders = await _context.Order.Where(b => b.UserId == userId).ToListAsync();
+            var orders = await _context.Order.Where(b => b.UserId == userId).Include(o => o.Product).ToListAsync();
             var orderDtos = _mapper.Map<IEnumerable<OrderOutDto>>(orders);
             return Ok(orderDtos);
         }
@@ -114,6 +114,22 @@ namespace faka.Controllers
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
 
+            return Ok();
+        }
+        
+        [HttpPost("submit")]
+        public async Task<ActionResult> SubmitOrder(OrderSubmitDto orderSubmitDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var product = await _context.Product.FindAsync(orderSubmitDto.ProductId);
+            if (product == null)
+            {
+                return BadRequest("商品不存在");
+            }
+            var order = _mapper.Map<Order>(orderSubmitDto);
+            order.UserId = userId;
+            _context.Order.Add(order);
+            await _context.SaveChangesAsync();
             return Ok();
         }
 

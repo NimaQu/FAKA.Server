@@ -11,7 +11,7 @@ public class ProductService
         Products = new List<Product>
         {
             new Product { Id = 1, Name = "Product 1", Price = 100 },
-            new Product { Id = 2, Name = "Product 2", Price = 200, CategoryId = 0 },
+            new Product { Id = 2, Name = "Product 2", Price = 200, ProductGroupId = 0 },
             new Product { Id = 3, Name = "Product 3", Price = 300, IsEnabled = true },
             new Product { Id = 4, Name = "Product 4", Price = 400, IsHidden = true },
             new Product { Id = 5, Name = "Product 5", Price = 500, Description = "114514" },

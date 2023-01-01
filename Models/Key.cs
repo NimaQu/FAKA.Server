@@ -20,5 +20,5 @@ public class Key
     
     public int ProductId { get; set; }
     [JsonIgnore]
-    public virtual Product? Product { get; set; }
+    public Product? Product { get; set; }
 }

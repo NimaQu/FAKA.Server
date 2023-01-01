@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 
 namespace faka.Models;
 
@@ -15,12 +16,13 @@ public class Order
     public string Email { get; set; } = null!;
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime? CreatedAt { get; set; }
+    [Precision(10, 2)]
     public decimal Price { get; set; }
     public int ProductId { get; set; }
     [JsonIgnore]
-    public virtual Product? Product { get; set; }
+    public Product? Product { get; set; }
     public string? UserId { get; set; }
     
     [JsonIgnore]
-    public virtual IdentityUser? User { get; set; }
+    public IdentityUser? User { get; set; }
 }

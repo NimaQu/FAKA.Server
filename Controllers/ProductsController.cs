@@ -87,6 +87,11 @@ namespace faka.Controllers
         public async Task<ActionResult> PostProduct(ProductInDto productInDto)
         {
             var product = _mapper.Map<Product>(productInDto);
+            var category = await _context.ProductGroup.FindAsync(product.ProductGroupId);
+            if (category == null)
+            {
+                return BadRequest("商品分类不存在");
+            }
             _context.Product.Add(product);
             await _context.SaveChangesAsync();
 
