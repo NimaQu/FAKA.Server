@@ -25,4 +25,8 @@ public class Order
     
     [JsonIgnore]
     public IdentityUser? User { get; set; }
+    
+    public int? GatewayId { get; set; }
+    [JsonIgnore]
+    public Gateway? Gateway { get; set; }
 }

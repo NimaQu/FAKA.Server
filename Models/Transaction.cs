@@ -12,7 +12,6 @@ public class Transaction
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string? PaymentMethod { get; set; } = "";
-    public string? Gateway { get; set; } = "";
     [Precision(10, 2)]
     public decimal Amount { get; set; }
     public bool IsPaid { get; set; } = false;
@@ -23,6 +22,11 @@ public class Transaction
     public DateTime CreatedAt { get; set; }
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime? UpdatedAt { get; set; }
+    
+    
+    public int? GatewayId { get; set; }
+    [JsonIgnore]
+    public Gateway? Gateway { get; set; }
 
     public int? OrderId { get; set; }
     [JsonIgnore]
