@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Configuration;
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using faka.Data;
@@ -10,7 +11,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using faka.Auth;
 using faka.Filters;
+using faka.Payment;
+using faka.Payment.Gateways;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -110,6 +114,15 @@ builder.Services.AddCors(options =>
 
 //add automapper
 builder.Services.AddAutoMapper(typeof(OrganizationProfile));
+
+//add payment gateway and config name
+builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
+builder.Services.AddTransient<IPaymentGateway, StripeCardPaymentGateway>();
+
+builder.Services.AddTransient<PaymentGatewayFactory>();
+builder.Services.Configure<Dictionary<string, Dictionary<string, object>>>(configuration.GetSection("PaymentGateways"));
+
+
 
 var app = builder.Build();
 

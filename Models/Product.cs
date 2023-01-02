@@ -20,7 +20,7 @@ public class Product
     public bool IsHidden { get; set; } = false;
     public int Stock { get; set; }
     public int ProductGroupId { get; set; }
-    public ProductGroup? Category { get; set; }
+    public ProductGroup? ProductGroup { get; set; }
     
     [JsonIgnore]
     public List<Order>? Orders { get; set; }

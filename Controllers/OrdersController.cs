@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Drawing.Printing;
+using System.Security.Claims;
 using AutoMapper;
 using faka.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using faka.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using faka.Models.Dtos;
+using faka.Payment;
 
 namespace faka.Controllers
 {
@@ -18,13 +20,15 @@ namespace faka.Controllers
         private readonly fakaContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly PaymentGatewayFactory  _paymentGatewayFactory;
 
-        public OrdersController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+        public OrdersController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory)
         {
             // 依赖注入
             _context = context;
             _userManager = userManager;
             _mapper = mapper;
+            _paymentGatewayFactory = paymentGatewayFactory;
         }
 
         // GET: api/Orders
@@ -120,6 +124,9 @@ namespace faka.Controllers
         [HttpPost("submit")]
         public async Task<ActionResult> SubmitOrder(OrderSubmitDto orderSubmitDto)
         {
+            var gateway = _paymentGatewayFactory.Create("stripe-card");
+            var res = await gateway.CreatePaymentAsync(114514);
+            Console.WriteLine(res);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var product = await _context.Product.FindAsync(orderSubmitDto.ProductId);
             if (product == null)
