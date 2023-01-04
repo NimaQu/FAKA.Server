@@ -23,6 +23,8 @@ public class OrganizationProfile : Profile
             .ForMember(dto => dto.Products, opt => opt.MapFrom(src => src.Products));
         
         CreateMap<TransactionInDto, Transaction>();
+        
+        CreateMap<Gateway, GatewayOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
         // Use CreateMap... Etc.. here (Profile methods are the same as configuration methods)
     }
 }

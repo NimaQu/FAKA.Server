@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,6 +13,7 @@ public class Order
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
+    public string? AccessCode { get; set; }
     public int Quantity { get; set; }
     public string Email { get; set; } = null!;
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
@@ -29,4 +31,12 @@ public class Order
     public int? GatewayId { get; set; }
     [JsonIgnore]
     public Gateway? Gateway { get; set; }
+    
+    public void GenerateAccessCode()
+    {
+        var randomNumberGenerator = RandomNumberGenerator.Create();
+        var data = new byte[64];
+        randomNumberGenerator.GetBytes(data);
+        AccessCode = Convert.ToBase64String(data);
+    }
 }

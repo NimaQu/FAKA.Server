@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using faka.Data;
 
@@ -11,9 +12,11 @@ using faka.Data;
 namespace faka.Migrations
 {
     [DbContext(typeof(fakaContext))]
-    partial class fakaContextModelSnapshot : ModelSnapshot
+    [Migration("20230104074526_add accesscode to order")]
+    partial class addaccesscodetoorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,7 +241,12 @@ namespace faka.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProductGroupId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductGroupId");
 
                     b.ToTable("Gateway");
                 });
@@ -490,6 +498,13 @@ namespace faka.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("faka.Models.Gateway", b =>
+                {
+                    b.HasOne("faka.Models.ProductGroup", null)
+                        .WithMany("Gateways")
+                        .HasForeignKey("ProductGroupId");
+                });
+
             modelBuilder.Entity("faka.Models.Key", b =>
                 {
                     b.HasOne("faka.Models.Product", "Product")
@@ -565,6 +580,8 @@ namespace faka.Migrations
 
             modelBuilder.Entity("faka.Models.ProductGroup", b =>
                 {
+                    b.Navigation("Gateways");
+
                     b.Navigation("Products");
                 });
 #pragma warning restore 612, 618

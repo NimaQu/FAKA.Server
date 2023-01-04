@@ -63,7 +63,6 @@ namespace faka.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
             //发送验证邮件
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //var callbackUrl = Url.Action("ConfirmEmail", "Auth", new {code = code}, protocol: HttpContext.Request.Scheme);
             var token = await GetJwtToken(user);
             //add token to header
             Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");

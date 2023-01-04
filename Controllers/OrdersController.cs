@@ -66,6 +66,59 @@ namespace faka.Controllers
             var orderDto = _mapper.Map<OrderOutDto>(order);
             return Ok(orderDto);
         }
+        
+        // POST: api/Orders/id/pay
+        // User pay for order
+        [HttpPost("{id}/pay"), Authorize(Roles = Roles.User)]
+        public async Task<ActionResult> PayOrder(int id, OrderPayDto orderPayDto)
+        {
+            //var order = await _context.Order.FindAsync(id);
+            var order = await _context.Order
+                .Include(o => o.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null)
+            {
+                return NotFound("订单不存在");
+            }
+
+            var gateways = await _context.Gateway.ToListAsync();
+            var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
+            if (gateway == null)
+            {
+                return NotFound("支付方式不可用");
+            }
+
+            var payment = _paymentGatewayFactory.Create(gateway.Name);
+            var res = await payment.CreatePaymentAsync(order);
+            return Ok(res);
+        }
+        
+        // POST: api/Orders/code/pay
+        // Guest pay for order
+        [HttpPost("guest/pay")]
+        public async Task<ActionResult> PayOrder(OrderPayDto orderPayDto)
+        {
+            //var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.AccessCode == code);
+            //get payment gateway form request
+            var order = await _context.Order
+                .Include(o => o.Product)
+                .FirstOrDefaultAsync(o => o.AccessCode == orderPayDto.AccessCode);
+            if (order == null)
+            {
+                return NotFound("订单不存在");
+            }
+
+            var gateways = await _context.Gateway.ToListAsync();
+            var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
+            if (gateway == null)
+            {
+                return NotFound("支付方式不可用");
+            }
+
+            var payment = _paymentGatewayFactory.Create(gateway.Name);
+            var res = await payment.CreatePaymentAsync(order);
+            return Ok(res);
+        }
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -124,9 +177,6 @@ namespace faka.Controllers
         [HttpPost("submit")]
         public async Task<ActionResult> SubmitOrder(OrderSubmitDto orderSubmitDto)
         {
-            var gateway = _paymentGatewayFactory.Create("stripe-card");
-            var res = await gateway.CreatePaymentAsync(114514);
-            Console.WriteLine(res);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var product = await _context.Product.FindAsync(orderSubmitDto.ProductId);
             if (product == null)
@@ -134,10 +184,16 @@ namespace faka.Controllers
                 return BadRequest("商品不存在");
             }
             var order = _mapper.Map<Order>(orderSubmitDto);
+            order.Price = product.Price * order.Quantity;
+
+            if (userId == null)
+            {
+                order.GenerateAccessCode();
+            }
             order.UserId = userId;
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
-            return Ok();
+            return Ok(order.AccessCode);
         }
 
         // DELETE: api/Orders/5

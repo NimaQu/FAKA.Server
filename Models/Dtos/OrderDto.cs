@@ -25,3 +25,9 @@ public class OrderSubmitDto
     public string Email { get; set; } = null!;
     public int ProductId { get; set; }
 }
+
+public class OrderPayDto
+{
+    public string AccessCode { get; set; } = null!;
+    public int GatewayId { get; set; } 
+}

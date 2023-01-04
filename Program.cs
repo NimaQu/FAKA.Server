@@ -117,7 +117,6 @@ builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
 //add payment gateway and config name
 builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
-builder.Services.AddTransient<IPaymentGateway, StripeCardPaymentGateway>();
 
 builder.Services.AddTransient<PaymentGatewayFactory>();
 builder.Services.Configure<Dictionary<string, Dictionary<string, object>>>(configuration.GetSection("PaymentGateways"));

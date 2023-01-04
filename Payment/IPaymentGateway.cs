@@ -1,7 +1,9 @@
-﻿namespace faka.Payment;
+﻿using faka.Models;
+
+namespace faka.Payment;
 
 public interface IPaymentGateway
 {
     string Name { get; }
-    Task<string> CreatePaymentAsync(decimal amount);
+    Task<string> CreatePaymentAsync(Order order);
 }
