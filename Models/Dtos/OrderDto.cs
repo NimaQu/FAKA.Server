@@ -8,6 +8,7 @@ public class OrderOutDto
     public DateTime? CreatedAt { get; set; }
     public int ProductId { get; set; }
     public string ProductName { get; set; } = null!;
+    public List<GatewayOutDto>? Gateways { get; set; }
 }
 
 public class OrderInDto
@@ -28,6 +29,5 @@ public class OrderSubmitDto
 
 public class OrderPayDto
 {
-    public string AccessCode { get; set; } = null!;
     public int GatewayId { get; set; } 
 }

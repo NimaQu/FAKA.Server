@@ -49,7 +49,7 @@ namespace faka.Controllers
         [HttpGet("{id}"), Authorize(Roles = Roles.User)]
         public async Task<ActionResult<OrderOutDto>> GetOrder(int id)
         {
-            var order = await _context.Order.FindAsync(id);
+            var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.Id == id);
             if (order == null)
             {
                 return NotFound();
@@ -63,7 +63,9 @@ namespace faka.Controllers
             {
                 return NotFound();
             }
+            var gateways = await _context.Gateway.ToListAsync();
             var orderDto = _mapper.Map<OrderOutDto>(order);
+            orderDto.Gateways = _mapper.Map<List<GatewayOutDto>>(gateways);
             return Ok(orderDto);
         }
         
@@ -92,17 +94,33 @@ namespace faka.Controllers
             var res = await payment.CreatePaymentAsync(order);
             return Ok(res);
         }
+
+        // GET: api/guest/Orders/5
+        // for guest
+        [HttpGet("/guest/{code}")]
+        public async Task<ActionResult<OrderOutDto>> GetOrderGuest(string code)
+        {
+            var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.AccessCode == code);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            var gateways = await _context.Gateway.ToListAsync();
+            var orderDto = _mapper.Map<OrderOutDto>(order);
+            orderDto.Gateways = _mapper.Map<List<GatewayOutDto>>(gateways);
+            return Ok(orderDto);
+        }
         
         // POST: api/Orders/code/pay
         // Guest pay for order
-        [HttpPost("guest/pay")]
-        public async Task<ActionResult> PayOrder(OrderPayDto orderPayDto)
+        [HttpPost("guest/{code}/pay")]
+        public async Task<ActionResult> PayOrder(string code, OrderPayDto orderPayDto)
         {
             //var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.AccessCode == code);
             //get payment gateway form request
             var order = await _context.Order
                 .Include(o => o.Product)
-                .FirstOrDefaultAsync(o => o.AccessCode == orderPayDto.AccessCode);
+                .FirstOrDefaultAsync(o => o.AccessCode == code);
             if (order == null)
             {
                 return NotFound("订单不存在");

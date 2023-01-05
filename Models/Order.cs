@@ -28,15 +28,11 @@ public class Order
     [JsonIgnore]
     public IdentityUser? User { get; set; }
     
-    public int? GatewayId { get; set; }
-    [JsonIgnore]
-    public Gateway? Gateway { get; set; }
-    
     public void GenerateAccessCode()
     {
-        var randomNumberGenerator = RandomNumberGenerator.Create();
-        var data = new byte[64];
-        randomNumberGenerator.GetBytes(data);
-        AccessCode = Convert.ToBase64String(data);
+        var random = new Random();
+        const string s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var randomString = new string(Enumerable.Range(0, 64).Select(i => s[random.Next(s.Length)]).ToArray());
+        AccessCode = randomString;
     }
 }
