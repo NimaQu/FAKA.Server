@@ -1,4 +1,4 @@
-﻿using System.Drawing.Printing;
+﻿using System.Net;
 using System.Security.Claims;
 using AutoMapper;
 using faka.Auth;
@@ -97,7 +97,7 @@ namespace faka.Controllers
 
         // GET: api/guest/Orders/5
         // for guest
-        [HttpGet("/guest/{code}")]
+        [HttpGet("guest/{code}")]
         public async Task<ActionResult<OrderOutDto>> GetOrderGuest(string code)
         {
             var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.AccessCode == code);
@@ -116,7 +116,6 @@ namespace faka.Controllers
         [HttpPost("guest/{code}/pay")]
         public async Task<ActionResult> PayOrder(string code, OrderPayDto orderPayDto)
         {
-            //var order = await _context.Order.Include(o => o.Product).FirstOrDefaultAsync(o => o.AccessCode == code);
             //get payment gateway form request
             var order = await _context.Order
                 .Include(o => o.Product)
@@ -135,6 +134,14 @@ namespace faka.Controllers
 
             var payment = _paymentGatewayFactory.Create(gateway.Name);
             var res = await payment.CreatePaymentAsync(order);
+            
+            var transaction = new Transaction().Create(order, gateway, res);
+            try {
+                _context.Transaction.Add(transaction);
+                await _context.SaveChangesAsync();
+            } catch (Exception e) {
+                return StatusCode(500, e.Message);
+            }
             return Ok(res);
         }
 

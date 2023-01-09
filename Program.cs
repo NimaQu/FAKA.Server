@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using faka.Auth;
 using faka.Filters;
+using faka.Hubs;
 using faka.Payment;
 using faka.Payment.Gateways;
 using Microsoft.AspNetCore.Authorization;
@@ -108,7 +109,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: myAllowSpecificOrigins,
         policy  =>
         {
-            policy.WithOrigins("*");
+            policy.WithOrigins("*")
+                .WithHeaders("Authorization");
         });
 });
 
@@ -121,6 +123,8 @@ builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
 builder.Services.AddTransient<PaymentGatewayFactory>();
 builder.Services.Configure<Dictionary<string, Dictionary<string, object>>>(configuration.GetSection("PaymentGateways"));
 
+//add signalr
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -131,6 +135,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Configure SignalR
+app.MapHub<PaymentHub>("/api/payment");
 
 app.UseCors(myAllowSpecificOrigins);
 

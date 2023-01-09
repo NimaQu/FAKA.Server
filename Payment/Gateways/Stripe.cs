@@ -19,7 +19,7 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
         StripeConfiguration.ApiKey = configuration["PaymentGateways:Stripe:ApiKey"];
     }
 
-    public async Task<string> CreatePaymentAsync(Order order)
+    public async Task<GatewayResponse> CreatePaymentAsync(Order order)
     {
         // 使用 Stripe API 创建支付
         //创建 checkout session
@@ -110,7 +110,12 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
         };
         var service = new SessionService();
         var session = await service.CreateAsync(options);
-        return session.Url;
+        return new GatewayResponse
+        {
+            Status = "success",
+            TradeNumber = session.Id,
+            PaymentUrl = session.Url
+        };
     }
 }
 
@@ -126,9 +131,9 @@ public class StripeCardPaymentGateway : IPaymentGateway
         Console.WriteLine(gatewayConfig["ApiKey"]);
     }
 
-    public async Task<string> CreatePaymentAsync(Order order)
+    public async Task<GatewayResponse> CreatePaymentAsync(Order order)
     {
         // 使用 Stripe API 创建支付
-        return "card payment";
+        return new GatewayResponse();
     }
 }

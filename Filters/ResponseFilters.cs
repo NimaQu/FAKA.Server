@@ -7,8 +7,13 @@ namespace faka.Filters;
 
 public class CustomResultFilterAttribute  : ResultFilterAttribute
 {
+    public bool Enabled { get; set; } = true;
     public override void OnResultExecuting(ResultExecutingContext context)
     {
+        if (!Enabled)
+        {
+            return;
+        }
         // 获取响应结果
         var result = context.Result;
         var message = string.Empty;
