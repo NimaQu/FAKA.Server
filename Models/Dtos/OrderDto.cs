@@ -1,4 +1,6 @@
-﻿namespace faka.Models.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace faka.Models.Dtos;
 
 public class OrderOutDto
 {
@@ -23,7 +25,8 @@ public class OrderInDto
 public class OrderSubmitDto
 {
     public int Quantity { get; set; }
-    public string Email { get; set; } = null!;
+    [EmailAddress(ErrorMessage = "Invalid Email Address")]
+    public string? Email { get; set; }
     public int ProductId { get; set; }
 }
 

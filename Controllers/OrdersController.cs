@@ -208,12 +208,20 @@ namespace faka.Controllers
             {
                 return BadRequest("商品不存在");
             }
+            if (orderSubmitDto.Email == null)
+            {
+                return BadRequest("邮箱不能为空");
+            }
             var order = _mapper.Map<Order>(orderSubmitDto);
             order.Price = product.Price * order.Quantity;
 
             if (userId == null)
             {
                 order.GenerateAccessCode();
+            }
+            else
+            {
+                order.Email = User.FindFirstValue(ClaimTypes.Email);
             }
             order.UserId = userId;
             _context.Order.Add(order);
