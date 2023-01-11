@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace faka.Models;
 
-public class Product
+public class Product : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

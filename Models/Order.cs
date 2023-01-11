@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace faka.Models;
 
-public class Order
+public class Order : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,8 +16,6 @@ public class Order
     public string? AccessCode { get; set; }
     public int Quantity { get; set; }
     public string Email { get; set; } = null!;
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime? CreatedAt { get; set; }
     [Precision(10, 2)]
     public decimal Price { get; set; }
     public int ProductId { get; set; }

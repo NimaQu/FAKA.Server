@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace faka.Models;
 
-public class Transaction
+public class Transaction : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,12 +18,7 @@ public class Transaction
     public string? GatewayTradeNumber { get; set; }
     public string TradeNumber { get; set; } = GenTradeNumber();
     public string? Description { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime CreatedAt { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime? UpdatedAt { get; set; }
-    
-    
+
     public int? GatewayId { get; set; }
     [JsonIgnore]
     public Gateway? Gateway { get; set; }

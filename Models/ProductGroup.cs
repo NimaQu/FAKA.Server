@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace faka.Models;
 
-public class ProductGroup
+public class ProductGroup : BaseEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

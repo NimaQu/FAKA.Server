@@ -3,7 +3,7 @@
 ## WIP
 ASP.NET Core 学习项目，用来重建[先辈杂货铺](https://shop.114514.cloud), 之前的是用的 whmcs + 插件，重+闭源+屎山
 
-纯 WEB API 后端项目，前端 [sun00108](https://github.com/sun00108) 会拿 React 帮我写，如果你们有兴趣的话我可能会开一个 org 之类的放上单独前端的仓库，API reference 后面等快完成了会完善 swagger
+纯 WEB API 后端项目，前端 [faka-react](https://github.com/sun00108/faka-react) ，如果你们有兴趣的话我可能会开一个 org 之类的放上单独前端的仓库，API reference 后面等快完成了会完善 swagger
 
 为什么用 ASP.NET Core 重建呢？因为我没用静态语言写后端，而且我想尝试一下 Microsoft 的生态，ASP.NET 又是企业级的，性能也不错，而且脚本胶水语言写多了我想换换口味
 
@@ -21,8 +21,10 @@ ORM 使用的是 Entity Framework Core，数据库开发中暂时使用的是 SQ
 - [x] 用户系统
 - [x] 订单系统
 - [x] 商品系统
-- [ ] 购买流程
-- [ ] 支付接口 （还没想好怎么设计能让第三方能快速集成，应该会接 stripe 和支付宝官方 sdk）
+- [x] 购买流程
+- [x] 支付接口 -WIP（目前只接了 Stripe， 还在完善 webhook 及客户端支付完刷新订单实现，还没决定是 websocket 还是 polling）
+- [ ] 密钥交付
+- [ ] 支付网关集成文档
 - [ ] recaptcha 等验证码集成
 - [ ] 邮件系统
 - [ ] Rate Limit 等安全相关
