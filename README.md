@@ -1,9 +1,21 @@
 # FAKA
 ### Made with ❤️ by NimaQu & [ChatGPT](https://openai.com/blog/chatgpt/)
 ## WIP
+
+![MIT License](https://img.shields.io/github/license/NimaQu/FAKA)
+![.NET 7.0](https://img.shields.io/badge/.NET-7.0-blue)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
+![GitHub last commit](https://img.shields.io/github/last-commit/NimaQu/FAKA)
+![GitHub issues](https://img.shields.io/github/issues/NimaQu/FAKA)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/NimaQu/FAKA)
+
 ASP.NET Core 学习项目，用来重建[先辈杂货铺](https://shop.114514.cloud), 之前的是用的 whmcs + 插件，重+闭源+屎山
 
 纯 WEB API 后端项目，前端 [faka-react](https://github.com/sun00108/faka-react) ，如果你们有兴趣的话我可能会开一个 org 之类的放上单独前端的仓库，API reference 后面等快完成了会完善 swagger
+
+swagger demo: https://fakadev.azurewebsites.net/swagger/index.html
+
+前端 demo: https://faka-react.pages.dev/
 
 为什么用 ASP.NET Core 重建呢？因为我没用静态语言写后端，而且我想尝试一下 Microsoft 的生态，ASP.NET 又是企业级的，性能也不错，而且脚本胶水语言写多了我想换换口味
 
@@ -17,6 +29,7 @@ ASP.NET Core 学习项目，用来重建[先辈杂货铺](https://shop.114514.cl
 用户身份和权限管理使用的是 ASP.NET Identity, 未来可能会增加更多的身份验证方式，例如 Azure AD 和 OAuth2，以及 MFA (10 刀买的 yubikey 总得用上)
 
 ORM 使用的是 Entity Framework Core，数据库开发中暂时使用的是 SQLServer LocalDB，鉴于这个框架的特性，我觉得应该可以很方便的迁移到其他数据库，最后生产环境应该会用 postgresql
+
 ## TODO
 - [x] 用户系统
 - [x] 订单系统
