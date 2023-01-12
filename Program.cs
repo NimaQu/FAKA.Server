@@ -1,21 +1,18 @@
-﻿using System.Configuration;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using faka.Data;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using AutoMapper;
+﻿using System.Text;
+using System.Text.Json.Serialization;
 using faka;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using faka.Auth;
+using faka.Data;
 using faka.Filters;
 using faka.Hubs;
 using faka.Payment;
 using faka.Payment.Gateways;
+using faka.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,10 +22,12 @@ var configuration = builder.Configuration;
 
 // For Entity Framework
 builder.Services.AddDbContext<fakaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("fakaContext") ?? throw new InvalidOperationException("Connection string 'fakaContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("fakaContext") ??
+                         throw new InvalidOperationException("Connection string 'fakaContext' not found.")));
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=> {
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
         //password settings
         options.Password.RequireDigit = false;
         options.Password.RequiredLength = 4;
@@ -41,36 +40,38 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=> {
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-
-// Adding Jwt Bearer
-.AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = configuration["JWT:ValidAudience"],
-        ValidIssuer = configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-    };
-});
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = configuration["JWT:ValidAudience"],
+            ValidIssuer = configuration["JWT:ValidIssuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+        };
+    });
 
 // adding controllers
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<CustomResultFilterAttribute>();
-});
+builder.Services.AddControllers(options => { options.Filters.Add<CustomResultFilterAttribute>(); })
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
-//add singleton
+//依赖注入(DI)
+//自定义鉴权回复中间件
 builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler, AuthMiddlewareResultHandler>();
+//支付接口
+builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
+builder.Services.AddTransient<PaymentGatewayFactory>();
+//服务
+builder.Services.AddTransient<OrderService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -93,8 +94,8 @@ builder.Services.AddSwaggerGen(option =>
             {
                 Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
@@ -106,8 +107,8 @@ builder.Services.AddSwaggerGen(option =>
 const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
-        policy  =>
+    options.AddPolicy(myAllowSpecificOrigins,
+        policy =>
         {
             policy.WithOrigins("*")
                 .WithHeaders("Authorization");
@@ -118,9 +119,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
 //add payment gateway and config name
-builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
-
-builder.Services.AddTransient<PaymentGatewayFactory>();
 builder.Services.Configure<Dictionary<string, Dictionary<string, object>>>(configuration.GetSection("PaymentGateways"));
 
 //add signalr

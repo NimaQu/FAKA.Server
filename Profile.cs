@@ -8,23 +8,24 @@ public class OrganizationProfile : Profile
 {
     public OrganizationProfile()
     {
-        CreateMap<Order, OrderOutDto>().ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name)).ForAllMembers(opt => opt.UseDestinationValue());
+        CreateMap<Order, OrderOutDto>();
         CreateMap<OrderInDto, Order>();
         CreateMap<OrderSubmitDto, Order>();
-        
-        CreateMap<Product, ProductOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
+
+        CreateMap<Product, ProductOutDto>();
         CreateMap<ProductInDto, Product>();
-        
-        CreateMap<Key, KeyOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
+
+        CreateMap<Key, KeyOutDto>();
         CreateMap<KeyInDto, Key>();
+        
+        CreateMap<AssignedKey, AssignedKeyOutDto>();
 
         CreateMap<ProductGroupInDto, ProductGroup>();
-        CreateMap<ProductGroup, ProductGroupOutDto>()
-            .ForMember(dto => dto.Products, opt => opt.MapFrom(src => src.Products));
-        
+        CreateMap<ProductGroup, ProductGroupOutDto>();
+
         CreateMap<TransactionInDto, Transaction>();
-        
-        CreateMap<Gateway, GatewayOutDto>().ForAllMembers(opt => opt.UseDestinationValue());
+
+        CreateMap<Gateway, GatewayOutDto>();
         // Use CreateMap... Etc.. here (Profile methods are the same as configuration methods)
     }
 }

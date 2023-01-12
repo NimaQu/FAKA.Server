@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using faka.Data;
 
@@ -11,9 +12,11 @@ using faka.Data;
 namespace faka.Migrations
 {
     [DbContext(typeof(fakaContext))]
-    partial class fakaContextModelSnapshot : ModelSnapshot
+    [Migration("20230112002017_change price to amount")]
+    partial class changepricetoamount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,38 +243,6 @@ namespace faka.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Announcements");
-                });
-
-            modelBuilder.Entity("faka.Models.AssignedKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AssignedKey");
                 });
 
             modelBuilder.Entity("faka.Models.Gateway", b =>
@@ -555,23 +526,6 @@ namespace faka.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("faka.Models.AssignedKey", b =>
-                {
-                    b.HasOne("faka.Models.Order", "Order")
-                        .WithMany("AssignedKeys")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("faka.Models.Key", b =>
                 {
                     b.HasOne("faka.Models.Product", "Product")
@@ -630,11 +584,6 @@ namespace faka.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("faka.Models.Order", b =>
-                {
-                    b.Navigation("AssignedKeys");
                 });
 
             modelBuilder.Entity("faka.Models.Product", b =>

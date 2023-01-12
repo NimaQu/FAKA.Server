@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using faka.Data;
 using faka.Filters;
 using faka.Hubs;
+using faka.Models;
+using faka.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
+using Stripe.Checkout;
 
 namespace faka.Controllers;
 
@@ -11,24 +16,25 @@ namespace faka.Controllers;
 [CustomResultFilter(Enabled = false)]
 public class WebhookController : Controller
 {
+    private readonly OrderService _orderService;
+    private readonly fakaContext _context;
     private readonly IConfiguration _configuration;
     private readonly IHubContext<PaymentHub> _hubContext;
 
-    public WebhookController(IConfiguration configuration, IHubContext<PaymentHub> hubContext)
+    public WebhookController(IConfiguration configuration, IHubContext<PaymentHub> hubContext, fakaContext context, OrderService orderService)
     {
-        _hubContext = hubContext;
         _configuration = configuration;
+        _hubContext = hubContext;
+        _context = context;
+        _orderService = orderService;
     }
-    
+
     [HttpPost("stripe")]
     public async Task<IActionResult> Stripe()
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         var webhookSecret = _configuration["PaymentGateways:Stripe:WebhookSecret"];
-        if (webhookSecret is null)
-        {
-            throw new Exception("Stripe Webhook Secret is not set");
-        }
+        if (webhookSecret is null) throw new Exception("Stripe Webhook Secret is not set");
 
         try
         {
@@ -40,25 +46,17 @@ public class WebhookController : Controller
 
             switch (stripeEvent.Type)
             {
-                case Events.PaymentIntentSucceeded:
+                case Events.CheckoutSessionCompleted:
                 {
-                    var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                    Console.WriteLine("A successful payment for {0} was made.", paymentIntent.Amount);
-                    // Then define and call a method to handle the successful payment intent.
-                    // handlePaymentIntentSucceeded(paymentIntent);
-                    break;
-                }
-                case Events.PaymentMethodAttached:
-                {
-                    var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
-                    // Then define and call a method to handle the successful attachment of a PaymentMethod.
-                    // handlePaymentMethodAttached(paymentMethod);
+                    if (stripeEvent.Data.Object is not Session session) throw new Exception("Stripe callback Session is null");
+                    await _orderService.FulfillOrderAsync(session.Id);
                     break;
                 }
                 default:
                     Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
                     break;
             }
+
             return Ok();
         }
         catch (StripeException e)

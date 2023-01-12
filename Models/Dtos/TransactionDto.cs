@@ -11,6 +11,6 @@ public class TransactionInDto
     public string? Description { get; set; }
 
     public int? OrderId { get; set; }
-    
+
     public string? UserId { get; set; }
 }

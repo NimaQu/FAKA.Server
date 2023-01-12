@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using faka.Data;
-using faka.Models;
+﻿using faka.Data;
 using Microsoft.AspNetCore.SignalR;
 
 namespace faka.Hubs;
@@ -9,7 +7,7 @@ public class PaymentHub : Hub
 {
     private readonly fakaContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public Dictionary<string, string> _connectionIds = new Dictionary<string, string>();
+    public Dictionary<string, string> _connectionIds = new();
 
     public PaymentHub(fakaContext dbContext, IHttpContextAccessor httpContextAccessor)
     {
@@ -21,7 +19,7 @@ public class PaymentHub : Hub
     {
         _connectionIds[accessCode] = Context.ConnectionId;
     }
-    
+
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         // 删除连接 ID

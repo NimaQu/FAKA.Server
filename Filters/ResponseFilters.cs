@@ -1,19 +1,15 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using NuGet.Protocol.Plugins;
 
 namespace faka.Filters;
 
-public class CustomResultFilterAttribute  : ResultFilterAttribute
+public class CustomResultFilterAttribute : ResultFilterAttribute
 {
     public bool Enabled { get; set; } = true;
+
     public override void OnResultExecuting(ResultExecutingContext context)
     {
-        if (!Enabled)
-        {
-            return;
-        }
+        if (!Enabled) return;
         // 获取响应结果
         var result = context.Result;
         var message = string.Empty;
@@ -36,16 +32,16 @@ public class CustomResultFilterAttribute  : ResultFilterAttribute
             {
                 var code = objectResult.StatusCode ?? StatusCodes.Status500InternalServerError;
                 var data = objectResult.Value;
-                if (code != StatusCodes.Status200OK)
+                if (code != StatusCodes.Status200OK && code != StatusCodes.Status201Created)
                 {
                     message = objectResult.Value?.ToString() ?? string.Empty;
-                    data = new {};
                 }
+
                 var apiResponse = new ResponseModel
                 {
                     Code = objectResult.StatusCode.GetValueOrDefault(),
                     Message = message,
-                    Data = data ?? new {}
+                    Data = data ?? new { }
                 };
 
                 context.Result = new JsonResult(apiResponse);
@@ -57,7 +53,7 @@ public class CustomResultFilterAttribute  : ResultFilterAttribute
                 {
                     Code = 233,
                     Message = "未知错误",
-                    Data = new {}
+                    Data = new { }
                 };
                 context.Result = new JsonResult(response);
                 break;

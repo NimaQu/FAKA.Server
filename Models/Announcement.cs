@@ -8,5 +8,6 @@ public class Announcement : BaseEntity
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
+
     public string? Content { get; set; }
 }

@@ -1,7 +1,4 @@
-﻿using faka.Payment.Gateways;
-using Microsoft.Extensions.Options;
-
-namespace faka.Payment;
+﻿namespace faka.Payment;
 
 public class PaymentGatewayFactory
 {
@@ -17,10 +14,7 @@ public class PaymentGatewayFactory
     {
         var paymentGateways = _serviceProvider.GetServices<IPaymentGateway>();
         var gateway = paymentGateways.FirstOrDefault(p => p.Name == paymentGatewayName);
-        if (gateway == null)
-        {
-            throw new Exception($"Payment gateway {paymentGatewayName} not found");
-        }
+        if (gateway == null) throw new Exception($"Payment gateway {paymentGatewayName} not found");
         return gateway;
     }
 }

@@ -12,34 +12,41 @@ public class Transaction : BaseEntity
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    [Precision(10, 2)]
-    public decimal Amount { get; set; }
+
+    [Precision(10, 2)] public decimal Amount { get; set; }
+
     public bool IsPaid { get; set; } = false;
     public string? GatewayTradeNumber { get; set; }
     public string TradeNumber { get; set; } = GenTradeNumber();
     public string? Description { get; set; }
 
     public int? GatewayId { get; set; }
-    [JsonIgnore]
-    public Gateway? Gateway { get; set; }
+
+    [JsonIgnore] public Gateway? Gateway { get; set; }
 
     public int? OrderId { get; set; }
-    [JsonIgnore]
-    public Order? Order { get; set; }
-    
+
+    [JsonIgnore] public Order? Order { get; set; }
+
     public string? UserId { get; set; }
-    [JsonIgnore]
-    public IdentityUser? User { get; set; }
+
+    [JsonIgnore] public IdentityUser? User { get; set; }
 
     public Transaction Create(Order order, Gateway gateway, GatewayResponse gatewayResponse)
     {
-        Amount = order.Price;
+        Amount = order.Amount;
         GatewayTradeNumber = gatewayResponse.TradeNumber;
         OrderId = order.Id;
         GatewayId = gateway.Id;
         UserId = order.UserId;
         return this;
     }
+    
+    public void SetPaid()
+    {
+        IsPaid = true;
+    }
+
     private static string GenTradeNumber()
     {
         return $"{DateTime.Now:yyyyMMddHHmmssfff}{new Random().Next(1000, 9999)}";
