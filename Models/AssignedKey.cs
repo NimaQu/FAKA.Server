@@ -6,9 +6,6 @@ namespace faka.Models;
 
 public class AssignedKey : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
     public string? Content { get; set; }
 
     public int OrderId { get; set; }

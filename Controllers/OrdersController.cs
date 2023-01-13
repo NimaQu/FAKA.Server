@@ -5,6 +5,7 @@ using faka.Data;
 using faka.Models;
 using faka.Models.Dtos;
 using faka.Payment;
+using faka.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +19,17 @@ public class OrdersController : ControllerBase
 {
     private readonly fakaContext _context;
     private readonly IMapper _mapper;
-    private readonly PaymentGatewayFactory _paymentGatewayFactory;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly OrderService _orderService;
 
     public OrdersController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper,
-        PaymentGatewayFactory paymentGatewayFactory)
+        OrderService orderService)
     {
         // 依赖注入
         _context = context;
         _userManager = userManager;
         _mapper = mapper;
-        _paymentGatewayFactory = paymentGatewayFactory;
+        _orderService = orderService;
     }
 
     // GET: api/Orders
@@ -67,18 +68,22 @@ public class OrdersController : ControllerBase
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> PayOrder(int id, OrderPayDto orderPayDto)
     {
-        //var order = await _context.Order.FindAsync(id);
-        var order = await _context.Order
-            .Include(o => o.Product)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound("订单不存在");
 
         var gateways = await _context.Gateway.ToListAsync();
         var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");
+        GatewayResponse res;
+        try
+        {
+            res = await _orderService.CreatePaymentAsync(order, gateway);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
 
-        var payment = _paymentGatewayFactory.Create(gateway.Name);
-        var res = await payment.CreatePaymentAsync(order);
         return Ok(res);
     }
 
@@ -87,9 +92,7 @@ public class OrdersController : ControllerBase
     [HttpGet("guest/{code}")]
     public async Task<ActionResult<OrderOutDto>> GetOrderGuest(string code)
     {
-        var order = await _context.Order.Include(o => o.Product)
-            .Include(o => o.AssignedKeys)
-            .FirstOrDefaultAsync(o => o.AccessCode == code);
+        var order = await _orderService.GetOrderByCodeAsync(code);
         if (order == null) return NotFound();
         var gateways = await _context.Gateway.ToListAsync();    
         var orderDto = _mapper.Map<OrderOutDto>(order);
@@ -103,23 +106,15 @@ public class OrdersController : ControllerBase
     public async Task<ActionResult> PayOrder(string code, OrderPayDto orderPayDto)
     {
         //get payment gateway form request
-        var order = await _context.Order
-            .Include(o => o.Product)
-            .FirstOrDefaultAsync(o => o.AccessCode == code);
+        var order = await _orderService.GetOrderByCodeAsync(code);
         if (order == null) return NotFound("订单不存在");
 
-        var gateways = await _context.Gateway.ToListAsync();
-        var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
+        var gateway = await _context.Gateway.FindAsync(orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");
-
-        var payment = _paymentGatewayFactory.Create(gateway.Name);
-        var res = await payment.CreatePaymentAsync(order);
-
-        var transaction = new Transaction().Create(order, gateway, res);
+        GatewayResponse res;
         try
         {
-            _context.Transaction.Add(transaction);
-            await _context.SaveChangesAsync();
+            res = await _orderService.CreatePaymentAsync(order, gateway);
         }
         catch (Exception e)
         {

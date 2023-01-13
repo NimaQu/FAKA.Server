@@ -9,12 +9,7 @@ namespace faka.Models;
 
 public class Transaction : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
     [Precision(10, 2)] public decimal Amount { get; set; }
-
     public bool IsPaid { get; set; } = false;
     public string? GatewayTradeNumber { get; set; }
     public string TradeNumber { get; set; } = GenTradeNumber();
@@ -32,16 +27,6 @@ public class Transaction : BaseEntity
 
     [JsonIgnore] public IdentityUser? User { get; set; }
 
-    public Transaction Create(Order order, Gateway gateway, GatewayResponse gatewayResponse)
-    {
-        Amount = order.Amount;
-        GatewayTradeNumber = gatewayResponse.TradeNumber;
-        OrderId = order.Id;
-        GatewayId = gateway.Id;
-        UserId = order.UserId;
-        return this;
-    }
-    
     public void SetPaid()
     {
         IsPaid = true;

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using faka.Auth;
+using faka.Services;
 using JWTAuthentication.NET6._0.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,18 +15,13 @@ namespace faka.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly AuthService _authService;
 
-    public AuthController(
-        UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration)
+    public AuthController(UserManager<IdentityUser> userManager, AuthService authService)
     {
         _userManager = userManager;
-        _roleManager = roleManager;
-        _configuration = configuration;
+        _authService = authService;
     }
 
     [HttpPost]
@@ -37,7 +33,7 @@ public class AuthController : ControllerBase
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             return Unauthorized("Invalid username or password");
 
-        var token = await GetJwtToken(user);
+        var token = await _authService.IssueJwtTokenAsync(user);
         //add token to header
         Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
 
@@ -64,7 +60,7 @@ public class AuthController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, result.Errors);
         //发送验证邮件
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var token = await GetJwtToken(user);
+        var token = await _authService.IssueJwtTokenAsync(user);
         //add token to header
         Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
         // dev only
@@ -90,15 +86,7 @@ public class AuthController : ControllerBase
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
             return StatusCode(StatusCodes.Status500InternalServerError, "User create failed");
-
-        if (!await _roleManager.RoleExistsAsync(Roles.Admin))
-            await _roleManager.CreateAsync(new IdentityRole(Roles.Admin));
-        if (!await _roleManager.RoleExistsAsync(Roles.User))
-            await _roleManager.CreateAsync(new IdentityRole(Roles.User));
-        if (await _roleManager.RoleExistsAsync(Roles.Admin))
-            await _userManager.AddToRoleAsync(user, Roles.Admin);
-        if (await _roleManager.RoleExistsAsync(Roles.User))
-            await _userManager.AddToRoleAsync(user, Roles.User);
+        await _authService.PromoToAdminAsync(user);
         return Ok("Account created successfully!");
     }
 
@@ -113,38 +101,11 @@ public class AuthController : ControllerBase
         var result = await _userManager.ConfirmEmailAsync(user, code);
         Console.WriteLine(result.Errors);
         if (!result.Succeeded) return BadRequest("链接无效或已过期");
-        if (await _roleManager.RoleExistsAsync(Roles.User))
-            await _userManager.AddToRoleAsync(user, Roles.User);
+        await _authService.PromoToUserAsync(user);
         // 因为是邮箱验证，所以直接登录并且更新token，因为未确认邮箱没有 User 这个 Role
-        var token = await GetJwtToken(user);
+        var token = await _authService.IssueJwtTokenAsync(user);
         //add token to header
         Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
         return Ok("邮箱验证成功");
-    }
-
-    private async Task<JwtSecurityToken> GetJwtToken(IdentityUser user)
-    {
-        var userRoles = await _userManager.GetRolesAsync(user);
-
-        var authClaims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new(ClaimTypes.Email, user.Email ?? string.Empty),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-        authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
-        var authSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? "defaultSecret"));
-
-        var token = new JwtSecurityToken(
-            _configuration["JWT:ValidIssuer"],
-            _configuration["JWT:ValidAudience"],
-            expires: DateTime.Now.AddHours(3),
-            claims: authClaims,
-            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-        );
-
-        return token;
     }
 }

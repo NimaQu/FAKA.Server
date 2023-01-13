@@ -7,10 +7,6 @@ namespace faka.Models;
 
 public class Product : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; init; }
-
     [Required] public string Name { get; set; } = null!;
 
     public string? Description { get; set; }

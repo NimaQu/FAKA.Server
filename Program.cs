@@ -72,6 +72,8 @@ builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
 builder.Services.AddTransient<PaymentGatewayFactory>();
 //服务
 builder.Services.AddTransient<OrderService>();
+builder.Services.AddTransient<TransactionService>();
+builder.Services.AddTransient<AuthService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

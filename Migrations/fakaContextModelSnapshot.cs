@@ -239,7 +239,7 @@ namespace faka.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Announcements");
+                    b.ToTable("Announcements", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.AssignedKey", b =>
@@ -271,7 +271,7 @@ namespace faka.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AssignedKey");
+                    b.ToTable("AssignedKey", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.Gateway", b =>
@@ -300,7 +300,7 @@ namespace faka.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gateway");
+                    b.ToTable("Gateway", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.Key", b =>
@@ -333,7 +333,7 @@ namespace faka.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Key");
+                    b.ToTable("Key", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.Order", b =>
@@ -379,7 +379,7 @@ namespace faka.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.Product", b =>
@@ -423,7 +423,7 @@ namespace faka.Migrations
 
                     b.HasIndex("ProductGroupId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.ProductGroup", b =>
@@ -450,7 +450,7 @@ namespace faka.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductGroup");
+                    b.ToTable("ProductGroup", (string)null);
                 });
 
             modelBuilder.Entity("faka.Models.Transaction", b =>
@@ -501,7 +501,7 @@ namespace faka.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

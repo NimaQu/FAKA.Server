@@ -10,9 +10,6 @@ namespace faka.Models;
 
 public class Order : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; init; }
     public string? AccessCode { get; set; }
     public int Quantity { get; set; }
     public string Email { get; set; } = null!;
