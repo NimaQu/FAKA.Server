@@ -15,7 +15,7 @@ public class PaymentHub : Hub
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task SetAccessCode(string accessCode)
+    public void SetAccessCode(string accessCode)
     {
         _connectionIds[accessCode] = Context.ConnectionId;
     }

@@ -1,6 +1,8 @@
+using AutoMapper;
 using faka.Auth;
 using faka.Data;
 using faka.Models;
+using faka.Models.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,40 +14,37 @@ namespace faka.Controllers;
 public class AnnouncementsController : ControllerBase
 {
     private readonly fakaContext _context;
+    private readonly IMapper _mapper;
 
-    public AnnouncementsController(fakaContext context)
+    public AnnouncementsController(fakaContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     // GET: api/Announcement
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Announcement>>> GetAnnouncements()
+    public async Task<ActionResult<IEnumerable<AnnouncementOutDto>>> GetAnnouncements()
     {
-        if (_context.Announcements == null) return NotFound();
-        return await _context.Announcements.ToListAsync();
+        return _mapper.Map<List<AnnouncementOutDto>>(await _context.Announcements.ToListAsync());
     }
 
     // GET: api/Announcement/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Announcement>> GetAnnouncement(int id)
+    public async Task<ActionResult<AnnouncementOutDto>> GetAnnouncement(int id)
     {
-        if (_context.Announcements == null) return NotFound();
         var announcement = await _context.Announcements.FindAsync(id);
 
-        if (announcement == null) return NotFound();
-
-        return announcement;
+        return _mapper.Map<AnnouncementOutDto>(announcement);
     }
 
     // PUT: api/Announcement/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> PutAnnouncement(int id, Announcement announcement)
+    public async Task<IActionResult> PutAnnouncement(int id, AnnouncementInDto announcementInDto)
     {
-        if (id != announcement.Id) return BadRequest();
-
+        var announcement = _mapper.Map<Announcement>(announcementInDto);
         _context.Entry(announcement).State = EntityState.Modified;
 
         try
@@ -55,24 +54,24 @@ public class AnnouncementsController : ControllerBase
         catch (DbUpdateConcurrencyException)
         {
             if (!AnnouncementExists(id))
-                return NotFound();
+                return NotFound("公告不存在");
             throw;
         }
 
-        return NoContent();
+        return Ok();
     }
 
     // POST: api/Announcement
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
-    public async Task<ActionResult<Announcement>> PostAnnouncement(Announcement announcement)
+    public async Task<ActionResult> PostAnnouncement(AnnouncementInDto announcementInDto)
     {
-        if (_context.Announcements == null) return Problem("Entity set 'fakaContext.Announcements'  is null.");
+        var announcement = _mapper.Map<Announcement>(announcementInDto);
         _context.Announcements.Add(announcement);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetAnnouncement", new { id = announcement.Id }, announcement);
+        return Ok();
     }
 
     // DELETE: api/Announcement/5
@@ -80,14 +79,13 @@ public class AnnouncementsController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteAnnouncement(int id)
     {
-        if (_context.Announcements == null) return NotFound();
         var announcement = await _context.Announcements.FindAsync(id);
         if (announcement == null) return NotFound();
 
         _context.Announcements.Remove(announcement);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok();
     }
 
     private bool AnnouncementExists(int id)
