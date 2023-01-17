@@ -36,15 +36,31 @@ public class Order : BaseEntity
         AccessCode = randomString;
     }
 
-    public void Complete()
+    public void SetComplete()
     {
         Status = OrderStatus.Completed;
+    }
+    
+    public void SetPending()
+    {
+        Status = OrderStatus.Pending;
+    }
+    
+    public void SetCancelled()
+    {
+        Status = OrderStatus.Canceled;
+    }
+    
+    public void SetPaid()
+    {
+        Status = OrderStatus.Paid;
     }
 }
 
 public enum OrderStatus
 {
     [EnumMember(Value = "pending")] Pending,
+    [EnumMember(Value = "paid")] Paid,
     [EnumMember(Value = "completed")] Completed,
     [EnumMember(Value = "cancelled")] Canceled
 }

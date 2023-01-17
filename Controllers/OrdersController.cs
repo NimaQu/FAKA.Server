@@ -70,6 +70,7 @@ public class OrdersController : ControllerBase
     {
         var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound("订单不存在");
+        if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
 
         var gateways = await _context.Gateway.ToListAsync();
         var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
@@ -108,6 +109,7 @@ public class OrdersController : ControllerBase
         //get payment gateway form request
         var order = await _orderService.GetOrderByCodeAsync(code);
         if (order == null) return NotFound("订单不存在");
+        if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
 
         var gateway = await _context.Gateway.FindAsync(orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");

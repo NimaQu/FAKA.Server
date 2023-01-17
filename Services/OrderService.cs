@@ -62,6 +62,8 @@ public class OrderService
         if (keys.Count < order.Quantity)
         {
             //todo 库存不足，写入 log 或者发送提醒邮件
+            order.SetPaid();
+            await _context.SaveChangesAsync();
             return false;
         }
 
@@ -75,7 +77,9 @@ public class OrderService
                 Content = key.Content
             });
         }
-
+        
+        order.SetComplete();
+        
         try
         {
             await _context.SaveChangesAsync();
@@ -86,8 +90,6 @@ public class OrderService
             //todo 写入 log 或者发送提醒邮件
             return false;
         }
-
-        order.Status = OrderStatus.Completed;
         return true;
     }
 }
