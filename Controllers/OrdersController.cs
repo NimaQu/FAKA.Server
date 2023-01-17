@@ -49,9 +49,7 @@ public class OrdersController : ControllerBase
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult<OrderOutDto>> GetOrder(int id)
     {
-        var order = await _context.Order.Include(o => o.Product)
-            .Include(o => o.AssignedKeys)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound();
         if (User.IsInRole(Roles.Admin)) return Ok(order);
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

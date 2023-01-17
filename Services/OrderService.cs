@@ -31,6 +31,7 @@ public class OrderService
     {
         return await _context.Order
             .Include(o => o.Product)
+            .Include(o => o.AssignedKeys)
             .FirstOrDefaultAsync(o => o.AccessCode == accessCode);
     }
     
@@ -38,6 +39,7 @@ public class OrderService
     {
         return await _context.Order
             .Include(o => o.Product)
+            .Include(o => o.AssignedKeys)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
 
