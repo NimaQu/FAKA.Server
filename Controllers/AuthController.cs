@@ -24,8 +24,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost]
-    [Route("login")]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
         if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
@@ -40,8 +39,7 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
-    [HttpPost]
-    [Route("register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         if (model.Username == null || model.Password == null) return BadRequest("Username or password is null");
@@ -67,8 +65,7 @@ public class AuthController : ControllerBase
         return Ok(code);
     }
 
-    [HttpPost]
-    [Route("register-admin")]
+    [HttpPost("register-admin")]
     // dev only
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
     {
@@ -90,9 +87,7 @@ public class AuthController : ControllerBase
         return Ok("Account created successfully!");
     }
 
-    [HttpPost]
-    [Authorize]
-    [Route("confirm-email")]
+    [HttpPost("confirm-email"), Authorize]
     public async Task<IActionResult> ConfirmEmail(string code)
     {
         var user = await _userManager.GetUserAsync(User);

@@ -26,6 +26,7 @@ public class OrganizationProfile : Profile
         CreateMap<TransactionInDto, Transaction>();
 
         CreateMap<Gateway, GatewayOutDto>();
+        CreateMap<GatewayInDto, Gateway>();
 
         CreateMap<Announcement, AnnouncementOutDto>();
         CreateMap<AnnouncementInDto, Announcement>();

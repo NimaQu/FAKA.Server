@@ -74,6 +74,7 @@ builder.Services.AddTransient<PaymentGatewayFactory>();
 builder.Services.AddTransient<OrderService>();
 builder.Services.AddTransient<TransactionService>();
 builder.Services.AddTransient<AuthService>();
+builder.Services.AddTransient<GatewayService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
