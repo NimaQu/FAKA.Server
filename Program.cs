@@ -113,7 +113,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("*")
-                .WithHeaders("Authorization");
+                .WithExposedHeaders("Authorization")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 });
 
@@ -136,11 +138,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(myAllowSpecificOrigins);
 // Configure SignalR
 app.MapHub<PaymentHub>("/api/payment");
-
-app.UseCors(myAllowSpecificOrigins);
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
