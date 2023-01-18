@@ -1,5 +1,6 @@
 ﻿using faka.Data;
 using faka.Models;
+using faka.Models.Dtos;
 using faka.Payment;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,13 +19,18 @@ public class OrderService
         _transactionService = transactionService;
     }
 
-    public async Task<GatewayResponse> CreatePaymentAsync(Order order, Gateway gateway)
+    public async Task<GatewayResponse> CreatePaymentAsync(Order order, Gateway gateway, OrderPayDto orderPayDto)
     {
         var payment = _paymentGatewayFactory.Create(gateway.Name);
-        var res = await payment.CreateAsync(order);
+        var res = await payment.CreateAsync(order, orderPayDto);
 
         await _transactionService.CreateAsync(order, gateway, res);
         return res;
+    }
+    
+    public async Task<int> GetAvailableKeyCountAsync(int productId)
+    {
+        return await _context.Key.CountAsync(k => k.ProductId == productId && k.IsUsed == false);
     }
 
     public async Task<Order?> GetOrderByCodeAsync(string accessCode)
@@ -53,8 +59,26 @@ public class OrderService
         if (order is null) throw new Exception("Order not found");
         // 错误处理
         var result = await AssignKeysAsync(order);
+        if (result)
+        {
+            order.SetComplete();
+            await UpdateProductStockAsync(order.ProductId, order.Quantity);
+        }
+        else
+        {
+            //todo 库存不足，写入 log 或者发送提醒邮件
+            order.SetPaid();
+        }
         await _context.SaveChangesAsync();
         //todo 发送邮件/WebHook通知客户
+    }
+    
+    private async Task UpdateProductStockAsync(int productId, int quantity)
+    {
+        var product = await _context.Product.FindAsync(productId);
+        if (product is null) throw new Exception("Product not found");
+        product.Stock -= quantity;
+        await _context.SaveChangesAsync();
     }
 
     private async Task<bool> AssignKeysAsync(Order order)
@@ -63,9 +87,6 @@ public class OrderService
             .Take(order.Quantity).ToListAsync();
         if (keys.Count < order.Quantity)
         {
-            //todo 库存不足，写入 log 或者发送提醒邮件
-            order.SetPaid();
-            await _context.SaveChangesAsync();
             return false;
         }
 
@@ -79,8 +100,6 @@ public class OrderService
                 Content = key.Content
             });
         }
-        
-        order.SetComplete();
         
         try
         {

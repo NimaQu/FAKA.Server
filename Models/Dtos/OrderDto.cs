@@ -38,4 +38,5 @@ public class OrderSubmitDto
 public class OrderPayDto
 {
     public int GatewayId { get; set; }
+    public string? ReturnUrl { get; set; }
 }

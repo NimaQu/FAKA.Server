@@ -62,6 +62,7 @@ public class OrdersController : ControllerBase
 
     // POST: api/Orders/id/pay
     // User pay for order
+    // 别忘了改 guest 的
     [HttpPost("{id}/pay")]
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> PayOrder(int id, OrderPayDto orderPayDto)
@@ -69,14 +70,18 @@ public class OrdersController : ControllerBase
         var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound("订单不存在");
         if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
-
+        
+        if (await _orderService.GetAvailableKeyCountAsync(order.ProductId) < order.Quantity)
+            return BadRequest("库存不足");
+        
         var gateways = await _context.Gateway.ToListAsync();
         var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");
+        
         GatewayResponse res;
         try
         {
-            res = await _orderService.CreatePaymentAsync(order, gateway);
+            res = await _orderService.CreatePaymentAsync(order, gateway, orderPayDto);
         }
         catch (Exception e)
         {
@@ -108,13 +113,16 @@ public class OrdersController : ControllerBase
         var order = await _orderService.GetOrderByCodeAsync(code);
         if (order == null) return NotFound("订单不存在");
         if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
+        
+        if (await _orderService.GetAvailableKeyCountAsync(order.ProductId) < order.Quantity)
+            return BadRequest("库存不足");
 
         var gateway = await _context.Gateway.FindAsync(orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");
         GatewayResponse res;
         try
         {
-            res = await _orderService.CreatePaymentAsync(order, gateway);
+            res = await _orderService.CreatePaymentAsync(order, gateway, orderPayDto);
         }
         catch (Exception e)
         {

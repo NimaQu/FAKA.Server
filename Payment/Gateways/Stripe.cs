@@ -1,4 +1,5 @@
 ﻿using faka.Models;
+using faka.Models.Dtos;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -20,7 +21,7 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
     private static string ConfigSection => "Stripe";
     public string Name => "Stripe";
 
-    public async Task<GatewayResponse> CreateAsync(Order order)
+    public async Task<GatewayResponse> CreateAsync(Order order, OrderPayDto orderPayDto)
     {
         // 使用 Stripe API 创建支付
         //创建 checkout session
@@ -32,13 +33,6 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
         {
             Email = order.Email
         });
-
-        //拿到控制器的 url
-        var request = _httpContextAccessor.HttpContext.Request;
-        var baseUrl = $"{request.Scheme}://{request.Host}/";
-        var successUrl = baseUrl + "payment/success";
-        var cancelUrl = baseUrl + "payment/cancel";
-
 
         var stripeCustomer = stripeCustomers.FirstOrDefault();
         if (stripeCustomer == null)
@@ -98,14 +92,15 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
             },
             Mode = "payment",
             Customer = stripeCustomer.Id,
-            SuccessUrl = successUrl,
-            CancelUrl = cancelUrl
+            SuccessUrl = orderPayDto.ReturnUrl,
+            CancelUrl = orderPayDto.ReturnUrl
         };
         var service = new SessionService();
         var session = await service.CreateAsync(options);
         return new GatewayResponse
         {
-            Status = "success",
+            Status = GatewayStatus.Success,
+            Gateway = Name,
             TradeNumber = session.Id,
             PaymentUrl = session.Url
         };
