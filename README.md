@@ -10,6 +10,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/NimaQu/FAKA)
 ![GitHub issues](https://img.shields.io/github/issues/NimaQu/FAKA)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/NimaQu/FAKA)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FNimaQu%2FFAKA.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FNimaQu%2FFAKA?ref=badge_shield)
 
 ASP.NET Core 学习项目，用来重建[先辈杂货铺](https://shop.114514.cloud), 之前的是用的 whmcs + 插件，重+闭源+屎山
 
@@ -55,3 +56,6 @@ postgresql
 
 - [ChatGPT](https://openai.com/blog/chatgpt/) 帮我 debug, 帮我实现功能，帮我设计数据库，你们都应该试试这个
 ![meme](https://user-images.githubusercontent.com/26685881/212586984-b383e140-3bc0-47bc-8032-bad2ace91cf9.jpg)
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FNimaQu%2FFAKA.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FNimaQu%2FFAKA?ref=badge_large)
