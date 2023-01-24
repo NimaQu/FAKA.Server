@@ -1,10 +1,8 @@
-﻿using faka.Models;
-using faka.Models.Dtos;
-
-namespace faka.Payment;
+﻿namespace faka.Payment;
 
 public interface IPaymentGateway
 {
     string Name { get; }
-    Task<GatewayResponse> CreateAsync(Order order, OrderPayDto orderPayDto);
+    string ConfigSection { get; }
+    Task<GatewayResponse> CreateAsync(PaymentRequest request);
 }

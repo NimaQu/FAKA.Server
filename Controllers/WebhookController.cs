@@ -5,15 +5,15 @@ using faka.Models;
 using faka.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
 
 namespace faka.Controllers;
 
+
+[CustomResultFilter(Enabled = false)]
 [Route("/api/[controller]")]
 [ApiController]
-[CustomResultFilter(Enabled = false)]
 public class WebhookController : Controller
 {
     private readonly OrderService _orderService;
@@ -69,5 +69,12 @@ public class WebhookController : Controller
             Console.WriteLine("Error: {0}", e.Message);
             return StatusCode(500);
         }
+    }
+    
+    [HttpPost("alipay")]
+    public async Task<IActionResult> Alipay()
+    {
+        // todo alipay webhook
+        return Ok();
     }
 }

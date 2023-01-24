@@ -21,10 +21,17 @@ public class OrderService
 
     public async Task<GatewayResponse> CreatePaymentAsync(Order order, Gateway gateway, OrderPayDto orderPayDto)
     {
+        var request = new PaymentRequest
+        {
+            Order = order,
+            Gateway = gateway,
+            ReturnUrl = orderPayDto.ReturnUrl,
+            TradeNumber = GenTradeNumber()
+        };
         var payment = _paymentGatewayFactory.Create(gateway.Name);
-        var res = await payment.CreateAsync(order, orderPayDto);
+        var res = await payment.CreateAsync(request);
 
-        await _transactionService.CreateAsync(order, gateway, res);
+        await _transactionService.CreateAsync(request, res);
         return res;
     }
     
@@ -112,5 +119,9 @@ public class OrderService
             return false;
         }
         return true;
+    }
+    private static string GenTradeNumber()
+    {
+        return $"{DateTime.Now:yyyyMMddHHmmssfff}{new Random().Next(1000, 9999)}";
     }
 }

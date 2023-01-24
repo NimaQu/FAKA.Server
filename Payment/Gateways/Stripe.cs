@@ -9,22 +9,21 @@ namespace faka.Payment.Gateways;
 public class StripeAlipayPaymentGateway : IPaymentGateway
 {
     private readonly IConfiguration _configuration;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public StripeAlipayPaymentGateway(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+    public StripeAlipayPaymentGateway(IConfiguration configuration)
     {
         _configuration = configuration;
-        _httpContextAccessor = httpContextAccessor;
         StripeConfiguration.ApiKey = configuration["PaymentGateways:Stripe:ApiKey"];
     }
 
-    private static string ConfigSection => "Stripe";
+    public string ConfigSection => "Stripe";
     public string Name => "Stripe";
 
-    public async Task<GatewayResponse> CreateAsync(Order order, OrderPayDto orderPayDto)
+    public async Task<GatewayResponse> CreateAsync(PaymentRequest request)
     {
         // 使用 Stripe API 创建支付
         //创建 checkout session
+        var order = request.Order;
         if (order.Product == null) throw new ArgumentException("Product is null");
         var product = order.Product;
 
@@ -92,17 +91,17 @@ public class StripeAlipayPaymentGateway : IPaymentGateway
             },
             Mode = "payment",
             Customer = stripeCustomer.Id,
-            SuccessUrl = orderPayDto.ReturnUrl,
-            CancelUrl = orderPayDto.ReturnUrl
+            SuccessUrl = request.ReturnUrl,
+            CancelUrl = request.ReturnUrl
         };
         var service = new SessionService();
         var session = await service.CreateAsync(options);
         return new GatewayResponse
         {
             Status = GatewayStatus.Success,
+            GatewayTradeNumber = session.Id,
             Gateway = Name,
-            TradeNumber = session.Id,
-            PaymentUrl = session.Url
+            Data = session.Url
         };
     }
 }

@@ -13,15 +13,16 @@ public class TransactionService
         _context = context;
     }
     
-    public async Task CreateAsync(Order order, Gateway gateway, GatewayResponse gatewayResponse)
+    public async Task CreateAsync(PaymentRequest request, GatewayResponse gatewayResponse)
     {
         var transaction = new Transaction
         {
-            Amount = order.Amount,
-            GatewayTradeNumber = gatewayResponse.TradeNumber,
-            OrderId = order.Id,
-            GatewayId = gateway.Id,
-            UserId = order.UserId
+            Amount = request.Order.Amount,
+            TradeNumber = request.TradeNumber,
+            GatewayTradeNumber = gatewayResponse.GatewayTradeNumber,
+            OrderId = request.Order.Id,
+            GatewayId = request.Gateway.Id,
+            UserId = request.Order.UserId
         };
         _context.Transaction.Add(transaction);
         await _context.SaveChangesAsync();

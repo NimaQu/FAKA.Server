@@ -67,10 +67,11 @@ builder.Services.AddControllers(options => { options.Filters.Add<CustomResultFil
 //自定义鉴权回复中间件
 builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler, AuthMiddlewareResultHandler>();
-//支付接口
+//---------------------------------支付接口----------------------------------
 builder.Services.AddTransient<IPaymentGateway, StripeAlipayPaymentGateway>();
+builder.Services.AddTransient<IPaymentGateway, AlipayWeb>();
 builder.Services.AddTransient<PaymentGatewayFactory>();
-//服务
+//---------------------------------服务------------------------------------
 builder.Services.AddTransient<OrderService>();
 builder.Services.AddTransient<TransactionService>();
 builder.Services.AddTransient<AuthService>();
