@@ -1,6 +1,5 @@
 ﻿using faka.Data;
 using faka.Filters;
-using faka.Hubs;
 using faka.Models;
 using faka.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +18,10 @@ public class WebhookController : Controller
     private readonly OrderService _orderService;
     private readonly fakaContext _context;
     private readonly IConfiguration _configuration;
-    private readonly IHubContext<PaymentHub> _hubContext;
 
-    public WebhookController(IConfiguration configuration, IHubContext<PaymentHub> hubContext, fakaContext context, OrderService orderService)
+    public WebhookController(IConfiguration configuration, fakaContext context, OrderService orderService)
     {
         _configuration = configuration;
-        _hubContext = hubContext;
         _context = context;
         _orderService = orderService;
     }

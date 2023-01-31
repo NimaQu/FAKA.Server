@@ -18,6 +18,14 @@ public class OrderService
         _paymentGatewayFactory = paymentGatewayFactory;
         _transactionService = transactionService;
     }
+    
+    /// <summary>
+    /// 使用指定网关创建支付请求
+    /// </summary>
+    /// <param name="order"></param>
+    /// <param name="gateway"></param>
+    /// <param name="orderPayDto"></param>
+    /// <returns></returns>
 
     public async Task<GatewayResponse> CreatePaymentAsync(Order order, Gateway gateway, OrderPayDto orderPayDto)
     {
@@ -40,7 +48,12 @@ public class OrderService
         return await _context.Key.CountAsync(k => k.ProductId == productId && k.IsUsed == false);
     }
 
-    public async Task<Order?> GetOrderByCodeAsync(string accessCode)
+    /// <summary>
+    /// 使用 AccessCode 获取订单
+    /// </summary>
+    /// <param name="accessCode">订单访问代码</param>
+    /// <returns></returns>
+    public async Task<Order?> GetOrderAsync(string accessCode)
     {
         return await _context.Order
             .Include(o => o.Product)
@@ -48,6 +61,11 @@ public class OrderService
             .FirstOrDefaultAsync(o => o.AccessCode == accessCode);
     }
     
+    /// <summary>
+    /// 使用订单 ID 获取订单
+    /// </summary>
+    /// <param name="id">订单 ID</param>
+    /// <returns></returns>
     public async Task<Order?> GetOrderAsync(int id)
     {
         return await _context.Order
@@ -55,6 +73,53 @@ public class OrderService
             .Include(o => o.AssignedKeys)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
+
+    /// <summary>
+    /// 获取指定用户的所有订单, 使用参数 perPage 和 page 分页
+    /// </summary>
+    /// <param name="userId">用户 ID</param>
+    /// <param name="perPage">每页的数量</param>
+    /// <param name="page">页数</param>
+    /// <returns>List of Order</returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<List<Order>> GetOrdersAsync (string userId, int perPage, int page)
+    {
+        if (perPage < 1 || page < 1) throw new Exception("Invalid perPage or page");
+        var orders = await _context.Order
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.Id)
+            .Skip((page - 1) * perPage)
+            .Take(perPage)
+            .ToListAsync();
+
+        return orders;
+    }
+    
+    /// <summary>
+    /// 获取所有订单, 使用参数 perPage 和 page 分页
+    /// </summary>
+    /// <param name="perPage">每页的数量</param>
+    /// <param name="page">页数</param>
+    /// <returns>List of Order</returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<List<Order>> GetOrdersAsync (int perPage, int page)
+    {
+        //获取所有订单，使用参数 perPage 和 page 分页
+        if (perPage < 1 || page < 1) throw new Exception("Invalid perPage or page");
+        var orders = await _context.Order
+            .OrderByDescending(o => o.Id)
+            .Skip((page - 1) * perPage)
+            .Take(perPage)
+            .ToListAsync();
+        
+        return orders;
+    }
+    
+    /// <summary>
+    /// 分配激活码，更新库存，更新订单状态
+    /// </summary>
+    /// <param name="gatewayTradeNumber">网关交易号</param>
+    /// <exception cref="Exception"></exception>
 
     public async Task FulfillOrderAsync(string gatewayTradeNumber)
     {

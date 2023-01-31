@@ -4,7 +4,6 @@ using faka;
 using faka.Auth;
 using faka.Data;
 using faka.Filters;
-using faka.Hubs;
 using faka.Payment;
 using faka.Payment.Gateways;
 using faka.Services;
@@ -141,8 +140,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(myAllowSpecificOrigins);
-// Configure SignalR
-app.MapHub<PaymentHub>("/api/payment");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

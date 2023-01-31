@@ -35,11 +35,12 @@ public class OrdersController : ControllerBase
     // GET: api/Orders
     [HttpGet]
     [Authorize(Roles = Roles.User)]
-    public async Task<ActionResult<IEnumerable<OrderOutDto>>> GetOrder()
+    public async Task<ActionResult<IEnumerable<OrderOutDto>>> GetOrder(int perPage = 10, int page = 1)
     {
+        if (perPage < 1 || page < 1) return BadRequest("分页参数错误");
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (User.IsInRole(Roles.Admin)) return Ok(await _context.Order.ToListAsync());
-        var orders = await _context.Order.Where(b => b.UserId == userId).Include(o => o.Product).ToListAsync();
+        if (User.IsInRole(Roles.Admin)) return Ok(await _orderService.GetOrdersAsync(perPage, page));
+        var orders = await _orderService.GetOrdersAsync(userId, perPage, page);
         var orderDtos = _mapper.Map<IEnumerable<OrderOutDto>>(orders);
         return Ok(orderDtos);
     }
@@ -47,7 +48,7 @@ public class OrdersController : ControllerBase
     // GET: api/Orders/5
     [HttpGet("{id}")]
     [Authorize(Roles = Roles.User)]
-    public async Task<ActionResult<OrderOutDto>> GetOrder(int id)
+    public async Task<ActionResult<OrderOutDto>> GetOrderById(int id)
     {
         var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound();
@@ -96,7 +97,7 @@ public class OrdersController : ControllerBase
     [HttpGet("guest/{code}")]
     public async Task<ActionResult<OrderOutDto>> GetOrderGuest(string code)
     {
-        var order = await _orderService.GetOrderByCodeAsync(code);
+        var order = await _orderService.GetOrderAsync(code);
         if (order == null) return NotFound();
         var gateways = await _context.Gateway.ToListAsync();    
         var orderDto = _mapper.Map<OrderOutDto>(order);
@@ -110,7 +111,7 @@ public class OrdersController : ControllerBase
     public async Task<ActionResult> PayOrder(string code, OrderPayDto orderPayDto)
     {
         //get payment gateway form request
-        var order = await _orderService.GetOrderByCodeAsync(code);
+        var order = await _orderService.GetOrderAsync(code);
         if (order == null) return NotFound("订单不存在");
         if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
         
