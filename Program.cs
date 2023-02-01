@@ -7,6 +7,7 @@ using faka.Filters;
 using faka.Payment;
 using faka.Payment.Gateways;
 using faka.Services;
+using FluentEmail.MailKitSmtp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -62,6 +63,18 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers(options => { options.Filters.Add<CustomResultFilterAttribute>(); })
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
+//邮件服务
+builder.Services.AddFluentEmail(configuration["SMTP:Sender"], configuration["SMTP:SenderName"])
+    .AddLiquidRenderer()
+    .AddMailKitSender(new SmtpClientOptions
+    {
+        Server = configuration["SMTP:Server"],
+        Port = int.Parse(configuration["SMTP:Port"] ?? throw new InvalidOperationException("SMTP:Port not found or invalid.")),
+        User = configuration["SMTP:Username"],
+        Password = configuration["SMTP:Password"],
+        RequiresAuthentication = (configuration["SMTP:Password"] != null && configuration["SMTP:Username"] != null)
+    });
+
 //依赖注入(DI)
 //自定义鉴权回复中间件
 builder.Services.AddSingleton<
@@ -75,6 +88,7 @@ builder.Services.AddTransient<OrderService>();
 builder.Services.AddTransient<TransactionService>();
 builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<GatewayService>();
+builder.Services.AddTransient<EmailService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

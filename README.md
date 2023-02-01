@@ -45,11 +45,11 @@ postgresql
 - [x] 商品系统
 - [x] 购买流程
 - [x] 支付接口 -WIP（目前只接了 Stripe， 还在完善 webhook 及客户端支付完刷新订单实现，还没决定是 websocket 还是 polling）
-- [ ] 重构控制器，将业务逻辑从控制器中分离出来
+- [x] 重构控制器，将业务逻辑从控制器中分离出来
 - [x] 密钥交付
-- [ ] 支付网关集成文档
+- [x] 支付网关集成文档
 - [ ] recaptcha 等验证码集成
-- [ ] 邮件系统
+- [x] 邮件系统
 - [ ] Rate Limit 等安全相关
 
 ## Special Thanks

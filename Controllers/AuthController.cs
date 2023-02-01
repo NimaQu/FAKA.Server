@@ -17,11 +17,13 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly AuthService _authService;
+    private readonly EmailService _emailService;
 
-    public AuthController(UserManager<IdentityUser> userManager, AuthService authService)
+    public AuthController(UserManager<IdentityUser> userManager, AuthService authService, EmailService emailService)
     {
         _userManager = userManager;
         _authService = authService;
+        _emailService = emailService;
     }
 
     [HttpPost("login")]
@@ -62,6 +64,7 @@ public class AuthController : ControllerBase
         //add token to header
         Response.Headers.Add("Authorization", $"Bearer {new JwtSecurityTokenHandler().WriteToken(token)}");
         // dev only
+        await _emailService.SendVerificationEmailAsync(user.Email, code);
         return Ok(code);
     }
 
