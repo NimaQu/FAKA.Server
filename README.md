@@ -14,7 +14,9 @@
 
 ASP.NET Core 学习项目，用来重建[先辈杂货铺](https://shop.114514.cloud), 之前的是用的 whmcs + 插件，重+闭源+屎山
 
-纯 WEB API 后端项目，前端 [faka-react](https://github.com/sun00108/faka-react) ，如果你们有兴趣的话我可能会开一个 org
+得益于 .NET, 该项目可在多个平台及多个处理器架构上运行，包括 loongarch64
+
+纯 WEB API 后端项目，前端目前只有 [faka-react](https://github.com/sun00108/faka-react) ，如果你们有兴趣的话我可能会开一个 org
 之类的放上单独前端的仓库，API reference 后面等快完成了会完善 swagger
 
 swagger demo: https://fakadev.azurewebsites.net/swagger/index.html
@@ -50,6 +52,7 @@ postgresql
 - [x] 支付网关集成文档
 - [ ] recaptcha 等验证码集成
 - [x] 邮件系统
+- [ ] 邮件模板
 - [ ] Rate Limit 等安全相关
 
 ## Special Thanks
