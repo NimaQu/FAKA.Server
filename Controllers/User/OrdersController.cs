@@ -11,10 +11,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.User;
 
-[Route("api/v1/service/[controller]")]
+[Route("api/v1/user/[controller]")]
 [ApiController]
+[Authorize(Roles = Roles.User)]
 public class OrdersController : ControllerBase
 {
     private readonly FakaContext _context;
@@ -32,34 +33,46 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    // GET: api/v1/public/Orders/5
-    // for guest
-    [HttpGet("{code}")]
-    public async Task<ActionResult<OrderOutDto>> GetOrderGuest(string code)
+    // GET: api/v1/user/Orders
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<OrderOutDto>>> GetOrder(int perPage = 10, int page = 1)
     {
-        var order = await _orderService.GetOrderAsync(code);
+        if (perPage < 1 || page < 1) return BadRequest("分页参数错误");
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var orders = await _orderService.GetOrdersAsync(userId, perPage, page);
+        var orderDtos = _mapper.Map<IEnumerable<OrderOutDto>>(orders);
+        return Ok(orderDtos);
+    }
+
+    // GET: api/v1/user/Orders/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<OrderOutDto>> GetOrderById(int id)
+    {
+        var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound();
-        var gateways = await _context.Gateway.ToListAsync();    
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (order.UserId != userId) return NotFound();
+        var gateways = await _context.Gateway.ToListAsync();
         var orderDto = _mapper.Map<OrderOutDto>(order);
         orderDto.Gateways = _mapper.Map<List<GatewayOutDto>>(gateways);
         return Ok(orderDto);
     }
 
-    // POST: api/v1/public/Orders/code/pay
-    // Guest pay for order
-    [HttpPost("{code}/pay")]
-    public async Task<ActionResult> PayOrder(string code, OrderPayDto orderPayDto)
+    // POST: api/v1/user/Orders/id/pay
+    [HttpPost("{id}/pay")]
+    public async Task<ActionResult> PayOrder(int id, OrderPayDto orderPayDto)
     {
-        //get payment gateway form request
-        var order = await _orderService.GetOrderAsync(code);
+        var order = await _orderService.GetOrderAsync(id);
         if (order == null) return NotFound("订单不存在");
         if (order.Status == OrderStatus.Completed) return BadRequest("订单已完成");
         
         if (await _orderService.GetAvailableKeyCountAsync(order.ProductId) < order.Quantity)
             return BadRequest("库存不足");
-
-        var gateway = await _context.Gateway.FindAsync(orderPayDto.GatewayId);
+        
+        var gateways = await _context.Gateway.ToListAsync();
+        var gateway = gateways.FirstOrDefault(g => g.Id == orderPayDto.GatewayId);
         if (gateway == null) return NotFound("支付方式不可用");
+        
         GatewayResponse res;
         try
         {
@@ -73,17 +86,18 @@ public class OrdersController : ControllerBase
         return Ok(res);
     }
     
-    // POST: api/v1/public/Orders/submit
+    // POST: api/v1/user/Orders/submit
     [HttpPost("submit")]
     public async Task<ActionResult> SubmitOrder(OrderSubmitDto orderSubmitDto)
     {
         var order = _mapper.Map<Order>(orderSubmitDto);
-        if (orderSubmitDto.Email == null) return BadRequest("邮箱不能为空");
-        order.GenerateAccessCode();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        order.Email = User.FindFirstValue(ClaimTypes.Email) ?? throw new InvalidOperationException("用户的邮箱不存在");
         var product = await _context.Product.FindAsync(orderSubmitDto.ProductId);
         if (product == null) return BadRequest("商品不存在");
         order.Product = product;
         order.Amount = product.Price * order.Quantity;
+        order.UserId = userId;
         _context.Order.Add(order);
         await _context.SaveChangesAsync();
         var orderOutDto = _mapper.Map<OrderOutDto>(order);

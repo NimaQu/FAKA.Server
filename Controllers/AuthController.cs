@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FAKA.Server.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v1/public/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -21,7 +21,8 @@ public class AuthController : ControllerBase
         _authService = authService;
         _emailService = emailService;
     }
-
+    
+    // POST: api/v1/public/Auth/login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
@@ -37,6 +38,7 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
+    // POST: api/v1/public/Auth/register
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
@@ -64,6 +66,7 @@ public class AuthController : ControllerBase
         return Ok(code);
     }
 
+    // POST: api/v1/public/Auth/register-admin
     [HttpPost("register-admin")]
     // dev only
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
@@ -86,7 +89,9 @@ public class AuthController : ControllerBase
         return Ok("Account created successfully!");
     }
 
-    [HttpPost("confirm-email"), Authorize]
+    // POST: api/v1/public/Auth/confirm-email
+    [HttpPost("confirm-email")]
+    [Authorize]
     public async Task<IActionResult> ConfirmEmail(string code)
     {
         var user = await _userManager.GetUserAsync(User);

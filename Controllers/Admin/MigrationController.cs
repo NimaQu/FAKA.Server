@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.Admin;
 
-[Route("api/[controller]")]
+[Route("api/v1/admin/[controller]")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class MigrationController : ControllerBase
 {
     private readonly FakaContext _context;
@@ -23,8 +24,8 @@ public class MigrationController : ControllerBase
         _mapper = mapper;
     }
 
+    // GET: api/v1/admin/Migration
     [HttpGet]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Migration()
     {
         var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
@@ -33,8 +34,8 @@ public class MigrationController : ControllerBase
         return NotFound("No pending migrations");
     }
 
+    // POST: api/v1/admin/Migration
     [HttpPost("run")]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> RunMigration()
     {
         await _context.Database.MigrateAsync();

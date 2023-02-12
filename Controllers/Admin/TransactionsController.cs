@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.Admin;
 
-[Route("api/[controller]")]
+[Route("api/v1/admin/[controller]")]
 [ApiController]
+[Authorize(Roles = Roles.Admin)]
 public class TransactionsController : ControllerBase
 {
     private readonly FakaContext _context;
@@ -26,9 +27,8 @@ public class TransactionsController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Transactions
+    // GET: api/v1/admin/Transactions
     [HttpGet]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransaction()
     {
         if (_context.Transaction == null) return NotFound();
@@ -36,9 +36,8 @@ public class TransactionsController : ControllerBase
         return await _context.Transaction.ToListAsync();
     }
 
-    // GET: api/Transactions/5
+    // GET: api/v1/admin/Transactions/5
     [HttpGet("{id}")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<Transaction>> GetTransaction(int id)
     {
         if (_context.Transaction == null) return NotFound();
@@ -50,10 +49,9 @@ public class TransactionsController : ControllerBase
         return transaction;
     }
 
-    // PUT: api/Transactions/5
+    // PUT: api/v1/admin/Transactions/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> PutTransaction(int id, Transaction transaction)
     {
         if (id != transaction.Id) return BadRequest();
@@ -73,10 +71,9 @@ public class TransactionsController : ControllerBase
         return Ok();
     }
 
-    // POST: api/Transactions
+    // POST: api/v1/admin/Transactions
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<Transaction>> PostTransaction(TransactionInDto transactionInDto)
     {
         var transaction = _mapper.Map<Transaction>(transactionInDto);
@@ -99,9 +96,8 @@ public class TransactionsController : ControllerBase
         return Ok();
     }
 
-    // DELETE: api/Transactions/5
+    // DELETE: api/v1/admin/Transactions/5
     [HttpDelete("{id}")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteTransaction(int id)
     {
         if (_context.Transaction == null) return NotFound();

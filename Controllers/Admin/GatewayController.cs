@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.Admin;
 
-[Route("api/[controller]")]
+[Route("api/v1/admin/[controller]")]
 [ApiController]
+[Authorize(Roles = Roles.Admin)]
 public class GatewayController : ControllerBase
 {
     private readonly FakaContext _context;
@@ -28,21 +29,24 @@ public class GatewayController : ControllerBase
         _gatewayService = gatewayService;
     }
     
-    [HttpGet, Authorize(Roles = Roles.Admin)]
+    // GET: api/v1/admin/Gateway
+    [HttpGet]
     public async Task<ActionResult<List<Gateway>>> GetGateway()
     {
         var gateways = await _context.Gateway.ToListAsync();
         return Ok(gateways);
     }
     
-    [HttpGet("{id}"), Authorize(Roles = Roles.Admin)]
+    // GET: api/v1/admin/Gateway/5
+    [HttpGet("{id}")]
     public async Task<ActionResult<Gateway>> GetGateway(int id)
     {
         var gateway = await _context.Gateway.FindAsync(id);
         return Ok(gateway);
     }
     
-    [HttpPost, Authorize(Roles = Roles.Admin)]
+    // POST: api/v1/admin/Gateway
+    [HttpPost]
     public async Task<ActionResult> PostGateway(GatewayInDto gatewayInDto)
     {
         var gateway = _mapper.Map<Gateway>(gatewayInDto);
@@ -59,7 +63,8 @@ public class GatewayController : ControllerBase
         return Ok();
     }
     
-    [HttpPut("{id}"), Authorize(Roles = Roles.Admin)]
+    // PUT: api/v1/admin/Gateway/5
+    [HttpPut("{id}")]
     public async Task<ActionResult> PutGateway(int id, GatewayInDto gatewayInDto)
     {
         var gateway = await _context.Gateway.FindAsync(id);
@@ -76,7 +81,8 @@ public class GatewayController : ControllerBase
         return Ok();
     }
     
-    [HttpDelete("{id}"), Authorize(Roles = Roles.Admin)]
+    // DELETE: api/v1/admin/Gateway/5
+    [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteGateway(int id)
     {
         var gateway = await _context.Gateway.FindAsync(id);
@@ -90,7 +96,8 @@ public class GatewayController : ControllerBase
         return Ok();
     }
     
-    [HttpGet("available"), Authorize(Roles = Roles.Admin)]
+    // GET: api/v1/admin/Gateway/available
+    [HttpGet("available")]
     public ActionResult<List<string>> GetAvailableGateway()
     {
         var gateways = _paymentGatewayFactory.GetAvailableGateways();

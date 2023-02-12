@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.Admin;
 
-[Route("api/[controller]")]
+[Route("api/v1/admin/[controller]")]
 [ApiController]
+[Authorize(Roles = Roles.Admin)]
 public class KeysController : ControllerBase
 {
     private readonly FakaContext _context;
@@ -26,31 +27,27 @@ public class KeysController : ControllerBase
         _mapper = mapper;
     }
 
-    // GET: api/Keys
+    // GET: api/v1/admin/Keys
     [HttpGet]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<IEnumerable<Key>>> GetKey()
     {
         return Ok(await _context.Key.ToListAsync());
     }
 
-    // GET: api/Keys/5
+    // GET: api/v1/admin/Keys/5
     [HttpGet("{id}")]
-    [Authorize(Roles = Roles.User)]
-    public async Task<ActionResult<KeyOutDto>> GetKey(int id)
+    public async Task<ActionResult<Key>> GetKey(int id)
     {
         var key = await _context.Key.FindAsync(id);
 
         if (key == null) return NotFound();
-        var keyOutDto = _mapper.Map<KeyOutDto>(key);
 
-        return Ok(keyOutDto);
+        return Ok(key);
     }
 
-    // PUT: api/Keys/5
+    // PUT: api/v1/admin/Keys/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult> PutKey(int id, KeyInDto keyInDto)
     {
         var key = await _context.Key.FindAsync(id);
@@ -72,10 +69,9 @@ public class KeysController : ControllerBase
         return Ok();
     }
 
-    // POST: api/Keys
+    // POST: api/v1/admin/Keys
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult> PostKey(KeyBatchInDto keyBatchInDto)
     {
         var product = await _context.Product.FindAsync(keyBatchInDto.ProductId);
@@ -90,9 +86,8 @@ public class KeysController : ControllerBase
         return Ok();
     }
 
-    // DELETE: api/Keys/5
+    // DELETE: api/v1/admin/Keys/5
     [HttpDelete("{id}")]
-    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult> DeleteKey(int id)
     {
         var key = await _context.Key.FindAsync(id);

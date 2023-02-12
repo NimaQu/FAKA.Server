@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using Stripe.Checkout;
 
-namespace FAKA.Server.Controllers;
+namespace FAKA.Server.Controllers.Service;
 
 
 [CustomResultFilter(Enabled = false)]
-[Route("/api/[controller]")]
+[Route("/api/v1/service/[controller]")]
 [ApiController]
 public class WebhookController : Controller
 {
