@@ -41,7 +41,7 @@ public class AuthService
         var token = new JwtSecurityToken(
             _configuration["JWT:ValidIssuer"],
             _configuration["JWT:ValidAudience"],
-            expires: DateTime.Now.AddHours(3),
+            expires: DateTime.Now.AddDays(30),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
