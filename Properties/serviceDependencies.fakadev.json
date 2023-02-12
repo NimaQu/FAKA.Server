@@ -3,12 +3,6 @@
     "apis1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/faka/apis/faka",
       "type": "apis.azure"
-    },
-    "mssql2": {
-      "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/fakadbserver/databases/faka_db",
-      "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:azuresql"
     }
   }
 }

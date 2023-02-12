@@ -1,15 +1,7 @@
 {
   "dependencies": {
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:fakaContext"
-    },
     "apis1": {
       "type": "apis"
-    },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:azuresql"
     }
   }
 }
