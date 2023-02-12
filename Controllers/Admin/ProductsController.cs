@@ -56,8 +56,6 @@ public class ProductsController : ControllerBase
         if (product == null) return NotFound("产品不存在");
         _mapper.Map(productInDto, product);
 
-        _context.Entry(product).State = EntityState.Modified;
-
         try
         {
             await _context.SaveChangesAsync();

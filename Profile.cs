@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FAKA.Server.Models;
 using FAKA.Server.Models.Dtos;
+using Microsoft.AspNetCore.Identity;
 
 namespace FAKA.Server;
 
@@ -30,6 +31,9 @@ public class OrganizationProfile : Profile
 
         CreateMap<Announcement, AnnouncementOutDto>();
         CreateMap<AnnouncementInDto, Announcement>();
+        
+        CreateMap<IdentityUser, UserOutDto>();
+        CreateMap<UserInDto, IdentityUser>();
         // Use CreateMap... Etc.. here (Profile methods are the same as configuration methods)
     }
 }
