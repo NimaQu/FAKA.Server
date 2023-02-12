@@ -1,28 +1,28 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using faka.Auth;
-using faka.Data;
-using faka.Models;
-using faka.Models.Dtos;
-using faka.Payment;
-using faka.Services;
+using FAKA.Server.Auth;
+using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
+using FAKA.Server.Payment;
+using FAKA.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class OrdersController : ControllerBase
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly OrderService _orderService;
 
-    public OrdersController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper,
+    public OrdersController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper,
         OrderService orderService)
     {
         // 依赖注入

@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
-using faka;
-using faka.Auth;
-using faka.Data;
-using faka.Filters;
-using faka.Payment;
-using faka.Payment.Gateways;
-using faka.Services;
+using FAKA.Server;
+using FAKA.Server.Auth;
+using FAKA.Server.Data;
+using FAKA.Server.Filters;
+using FAKA.Server.Payment;
+using FAKA.Server.Payment.Gateways;
+using FAKA.Server.Services;
 using FluentEmail.MailKitSmtp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +21,8 @@ var configuration = builder.Configuration;
 // Add services to the container.
 
 // For Entity Framework
-builder.Services.AddDbContext<fakaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("fakaContext") ??
+builder.Services.AddDbContext<FakaContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("FakaContext") ??
                          throw new InvalidOperationException("Connection string 'fakaContext' not found.")));
 
 // For Identity
@@ -35,7 +35,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
     })
-    .AddEntityFrameworkStores<fakaContext>()
+    .AddEntityFrameworkStores<FakaContext>()
     .AddDefaultTokenProviders();
 
 // Adding Authentication

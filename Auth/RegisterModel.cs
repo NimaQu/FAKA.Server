@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JWTAuthentication.NET6._0.Auth;
+namespace FAKA.Server.Auth;
 
 public class RegisterModel
 {

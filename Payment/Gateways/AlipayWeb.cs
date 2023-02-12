@@ -1,12 +1,8 @@
-﻿using faka.Models;
-using faka.Models.Dtos;
-using NuGet.Protocol;
-using Aop.Api;
-using Aop.Api.Request;
-using Aop.Api.Response;
+﻿using Aop.Api;
 using Aop.Api.Domain;
+using Aop.Api.Request;
 
-namespace faka.Payment.Gateways;
+namespace FAKA.Server.Payment.Gateways;
 
 public class AlipayWeb : IPaymentGateway
 {

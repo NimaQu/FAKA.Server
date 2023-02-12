@@ -1,11 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using faka.Auth;
+using FAKA.Server.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-namespace faka.Services;
+namespace FAKA.Server.Services;
 
 public class AuthService
 {

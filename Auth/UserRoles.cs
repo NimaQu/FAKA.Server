@@ -1,4 +1,4 @@
-﻿namespace faka.Auth;
+﻿namespace FAKA.Server.Auth;
 
 public abstract class Roles
 {

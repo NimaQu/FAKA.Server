@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using faka.Models;
-using faka.Models.Dtos;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
 
-namespace faka;
+namespace FAKA.Server;
 
 public class OrganizationProfile : Profile
 {

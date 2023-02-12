@@ -1,13 +1,13 @@
-﻿using faka.Models;
+﻿using FAKA.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Data;
+namespace FAKA.Server.Data;
 
-public class fakaContext : IdentityDbContext<IdentityUser>
+public class FakaContext : IdentityDbContext<IdentityUser>
 {
-    public fakaContext(DbContextOptions<fakaContext> options) : base(options)
+    public FakaContext(DbContextOptions<FakaContext> options) : base(options)
     {
     }
 

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace faka.Models;
+namespace FAKA.Server.Models;
 
 public abstract class BaseEntity
 {

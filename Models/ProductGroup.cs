@@ -1,4 +1,4 @@
-﻿namespace faka.Models;
+﻿namespace FAKA.Server.Models;
 
 public class ProductGroup : BaseEntity
 {

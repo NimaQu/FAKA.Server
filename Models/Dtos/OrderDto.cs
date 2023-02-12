@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace faka.Models.Dtos;
+namespace FAKA.Server.Models.Dtos;
 
 public class OrderOutDto
 {

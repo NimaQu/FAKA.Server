@@ -1,24 +1,24 @@
 ﻿using AutoMapper;
-using faka.Auth;
-using faka.Data;
-using faka.Models;
-using faka.Models.Dtos;
+using FAKA.Server.Auth;
+using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public ProductsController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+    public ProductsController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
     {
         // 依赖注入
         _context = context;

@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
-using faka.Data;
-using faka.Payment;
+using FAKA.Server.Data;
+using FAKA.Server.Payment;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Services;
+namespace FAKA.Server.Services;
 
 public class GatewayService
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     
-    public GatewayService(fakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory)
+    public GatewayService(FakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory)
     {
         _context = context;
         _mapper = mapper;

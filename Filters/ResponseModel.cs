@@ -1,4 +1,4 @@
-﻿namespace faka.Filters;
+﻿namespace FAKA.Server.Filters;
 
 public class ResponseModel
 {

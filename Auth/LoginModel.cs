@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace faka.Auth;
+namespace FAKA.Server.Auth;
 
 public class LoginModel
 {

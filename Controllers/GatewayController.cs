@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using faka.Auth;
-using faka.Data;
-using faka.Models;
-using faka.Models.Dtos;
-using faka.Payment;
-using faka.Services;
+using FAKA.Server.Auth;
+using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
+using FAKA.Server.Payment;
+using FAKA.Server.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class GatewayController : ControllerBase
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     private readonly GatewayService _gatewayService;
     
-    public GatewayController(fakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory, GatewayService gatewayService)
+    public GatewayController(FakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory, GatewayService gatewayService)
     {
         _context = context;
         _mapper = mapper;

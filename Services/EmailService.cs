@@ -1,6 +1,6 @@
 ﻿using FluentEmail.Core;
 
-namespace faka.Services;
+namespace FAKA.Server.Services;
 
 public class EmailService
 {

@@ -1,14 +1,14 @@
-﻿using faka.Data;
-using faka.Models;
-using faka.Payment;
+﻿using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Payment;
 
-namespace faka.Services;
+namespace FAKA.Server.Services;
 
 public class TransactionService
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
 
-    public TransactionService(fakaContext context)
+    public TransactionService(FakaContext context)
     {
         _context = context;
     }

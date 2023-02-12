@@ -1,8 +1,8 @@
-﻿using faka.Filters;
+﻿using FAKA.Server.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 
-namespace faka.Auth;
+namespace FAKA.Server.Auth;
 
 public class AuthMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
 {

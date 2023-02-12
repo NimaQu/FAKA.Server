@@ -1,18 +1,18 @@
-﻿using faka.Data;
-using faka.Models;
-using faka.Models.Dtos;
-using faka.Payment;
+﻿using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
+using FAKA.Server.Payment;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Services;
+namespace FAKA.Server.Services;
 
 public class OrderService
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     private readonly TransactionService _transactionService;
 
-    public OrderService(fakaContext context, PaymentGatewayFactory paymentGatewayFactory, TransactionService transactionService)
+    public OrderService(FakaContext context, PaymentGatewayFactory paymentGatewayFactory, TransactionService transactionService)
     {
         _context = context;
         _paymentGatewayFactory = paymentGatewayFactory;

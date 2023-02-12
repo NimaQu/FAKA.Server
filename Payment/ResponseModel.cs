@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace faka.Payment;
+namespace FAKA.Server.Payment;
 
 public class GatewayResponse
 {

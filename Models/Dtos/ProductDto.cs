@@ -1,4 +1,4 @@
-﻿namespace faka.Models.Dtos;
+﻿namespace FAKA.Server.Models.Dtos;
 
 public class ProductOutDto
 {

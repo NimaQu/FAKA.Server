@@ -1,21 +1,21 @@
 ﻿using AutoMapper;
-using faka.Data;
+using FAKA.Server.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class MigrationController : ControllerBase
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public MigrationController(fakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+    public MigrationController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
     {
         // 依赖注入
         _context = context;

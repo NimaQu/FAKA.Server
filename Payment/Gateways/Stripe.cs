@@ -1,10 +1,7 @@
-﻿using faka.Models;
-using faka.Models.Dtos;
-using Microsoft.Extensions.Options;
-using Stripe;
+﻿using Stripe;
 using Stripe.Checkout;
 
-namespace faka.Payment.Gateways;
+namespace FAKA.Server.Payment.Gateways;
 
 public class StripeAlipayPaymentGateway : IPaymentGateway
 {

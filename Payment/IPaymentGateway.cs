@@ -1,4 +1,4 @@
-﻿namespace faka.Payment;
+﻿namespace FAKA.Server.Payment;
 
 public interface IPaymentGateway
 {

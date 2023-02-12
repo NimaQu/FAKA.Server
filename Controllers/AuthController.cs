@@ -1,15 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using faka.Auth;
-using faka.Services;
-using JWTAuthentication.NET6._0.Auth;
+using FAKA.Server.Auth;
+using FAKA.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

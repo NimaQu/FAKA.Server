@@ -1,6 +1,6 @@
-﻿using faka.Models;
+﻿using FAKA.Server.Models;
 
-namespace faka.Payment;
+namespace FAKA.Server.Payment;
 
 public class PaymentRequest
 {

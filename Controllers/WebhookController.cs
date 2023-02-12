@@ -1,13 +1,11 @@
-﻿using faka.Data;
-using faka.Filters;
-using faka.Models;
-using faka.Services;
+﻿using FAKA.Server.Data;
+using FAKA.Server.Filters;
+using FAKA.Server.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Stripe;
 using Stripe.Checkout;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 
 [CustomResultFilter(Enabled = false)]
@@ -16,10 +14,10 @@ namespace faka.Controllers;
 public class WebhookController : Controller
 {
     private readonly OrderService _orderService;
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IConfiguration _configuration;
 
-    public WebhookController(IConfiguration configuration, fakaContext context, OrderService orderService)
+    public WebhookController(IConfiguration configuration, FakaContext context, OrderService orderService)
     {
         _configuration = configuration;
         _context = context;

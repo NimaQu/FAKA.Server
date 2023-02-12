@@ -1,22 +1,22 @@
 using AutoMapper;
-using faka.Auth;
-using faka.Data;
-using faka.Models;
-using faka.Models.Dtos;
+using FAKA.Server.Auth;
+using FAKA.Server.Data;
+using FAKA.Server.Models;
+using FAKA.Server.Models.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace faka.Controllers;
+namespace FAKA.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class AnnouncementsController : ControllerBase
 {
-    private readonly fakaContext _context;
+    private readonly FakaContext _context;
     private readonly IMapper _mapper;
 
-    public AnnouncementsController(fakaContext context, IMapper mapper)
+    public AnnouncementsController(FakaContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

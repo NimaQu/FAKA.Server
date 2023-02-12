@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace faka.Models;
+namespace FAKA.Server.Models;
 
 public class EmailTemplate : ControllerBase
 {
