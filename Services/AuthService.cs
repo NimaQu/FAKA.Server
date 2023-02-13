@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FAKA.Server.Models;
 using FAKA.Server.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -11,10 +12,10 @@ public class AuthService
 {
     private readonly IConfiguration _configuration;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     
     public AuthService(
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration)
     {
@@ -23,7 +24,7 @@ public class AuthService
         _configuration = configuration;
     }
     
-    public async Task<JwtSecurityToken> IssueJwtTokenAsync(IdentityUser user)
+    public async Task<JwtSecurityToken> IssueJwtTokenAsync(ApplicationUser user)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -61,14 +62,14 @@ public class AuthService
         }
     }
     
-    public async Task PromoToAdminAsync(IdentityUser user)
+    public async Task PromoToAdminAsync(ApplicationUser user)
     {
         await CreateRolesAsync();
         await _userManager.AddToRoleAsync(user, Roles.Admin);
         await _userManager.AddToRoleAsync(user, Roles.User);
     }
     
-    public async Task PromoToUserAsync(IdentityUser user)
+    public async Task PromoToUserAsync(ApplicationUser user)
     {
         await CreateRolesAsync();
         await _userManager.AddToRoleAsync(user, Roles.User);

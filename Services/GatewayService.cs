@@ -7,11 +7,11 @@ namespace FAKA.Server.Services;
 
 public class GatewayService
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     
-    public GatewayService(FakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory)
+    public GatewayService(ApplicationDbContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory)
     {
         _context = context;
         _mapper = mapper;

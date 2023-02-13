@@ -14,10 +14,10 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = Roles.Admin)]
 public class AnnouncementsController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public AnnouncementsController(FakaContext context, IMapper mapper)
+    public AnnouncementsController(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

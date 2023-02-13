@@ -8,11 +8,11 @@ namespace FAKA.Server.Services;
 
 public class OrderService
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     private readonly TransactionService _transactionService;
 
-    public OrderService(FakaContext context, PaymentGatewayFactory paymentGatewayFactory, TransactionService transactionService)
+    public OrderService(ApplicationDbContext context, PaymentGatewayFactory paymentGatewayFactory, TransactionService transactionService)
     {
         _context = context;
         _paymentGatewayFactory = paymentGatewayFactory;

@@ -18,12 +18,12 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = Roles.Admin)]
 public class OrdersController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly OrderService _orderService;
 
-    public OrdersController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper,
+    public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper,
         OrderService orderService)
     {
         // 依赖注入

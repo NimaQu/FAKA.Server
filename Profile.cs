@@ -32,8 +32,8 @@ public class OrganizationProfile : Profile
         CreateMap<Announcement, AnnouncementOutDto>();
         CreateMap<AnnouncementInDto, Announcement>();
         
-        CreateMap<IdentityUser, UserOutDto>();
-        CreateMap<UserInDto, IdentityUser>();
+        CreateMap<ApplicationUser, UserOutDto>();
+        CreateMap<UserInDto, ApplicationUser>();
         // Use CreateMap... Etc.. here (Profile methods are the same as configuration methods)
     }
 }

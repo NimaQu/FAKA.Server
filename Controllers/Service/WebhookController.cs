@@ -14,10 +14,10 @@ namespace FAKA.Server.Controllers.Service;
 public class WebhookController : Controller
 {
     private readonly OrderService _orderService;
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
 
-    public WebhookController(IConfiguration configuration, FakaContext context, OrderService orderService)
+    public WebhookController(IConfiguration configuration, ApplicationDbContext context, OrderService orderService)
     {
         _configuration = configuration;
         _context = context;

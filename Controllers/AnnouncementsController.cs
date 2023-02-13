@@ -13,10 +13,10 @@ namespace FAKA.Server.Controllers;
 [ApiController]
 public class AnnouncementsController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public AnnouncementsController(FakaContext context, IMapper mapper)
+    public AnnouncementsController(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

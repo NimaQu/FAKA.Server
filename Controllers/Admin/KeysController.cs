@@ -15,11 +15,11 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = Roles.Admin)]
 public class KeysController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public KeysController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+    public KeysController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
     {
         // 依赖注入
         _context = context;

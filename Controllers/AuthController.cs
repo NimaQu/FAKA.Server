@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using FAKA.Server.Auth;
+using FAKA.Server.Models;
 using FAKA.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,11 +12,11 @@ namespace FAKA.Server.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly AuthService _authService;
     private readonly EmailService _emailService;
 
-    public AuthController(UserManager<IdentityUser> userManager, AuthService authService, EmailService emailService)
+    public AuthController(UserManager<ApplicationUser> userManager, AuthService authService, EmailService emailService)
     {
         _userManager = userManager;
         _authService = authService;
@@ -47,7 +48,7 @@ public class AuthController : ControllerBase
         if (userExists != null)
             return BadRequest("User already exists!");
 
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             Email = model.Email,
             SecurityStamp = Guid.NewGuid().ToString(),
@@ -76,7 +77,7 @@ public class AuthController : ControllerBase
         if (userExists != null)
             return StatusCode(StatusCodes.Status500InternalServerError, "Account already exists!");
 
-        IdentityUser user = new()
+        ApplicationUser user = new()
         {
             Email = model.Email,
             SecurityStamp = Guid.NewGuid().ToString(),

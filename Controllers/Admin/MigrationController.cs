@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FAKA.Server.Data;
+using FAKA.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,11 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = "Admin")]
 public class MigrationController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public MigrationController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+    public MigrationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
     {
         // 依赖注入
         _context = context;

@@ -16,12 +16,12 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = Roles.Admin)]
 public class GatewayController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly PaymentGatewayFactory _paymentGatewayFactory;
     private readonly GatewayService _gatewayService;
     
-    public GatewayController(FakaContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory, GatewayService gatewayService)
+    public GatewayController(ApplicationDbContext context, IMapper mapper, PaymentGatewayFactory paymentGatewayFactory, GatewayService gatewayService)
     {
         _context = context;
         _mapper = mapper;

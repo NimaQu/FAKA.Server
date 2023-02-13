@@ -15,11 +15,11 @@ namespace FAKA.Server.Controllers.Admin;
 [Authorize(Roles = Roles.Admin)]
 public class ProductsController : ControllerBase
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ProductsController(FakaContext context, UserManager<IdentityUser> userManager, IMapper mapper)
+    public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IMapper mapper)
     {
         // 依赖注入
         _context = context;

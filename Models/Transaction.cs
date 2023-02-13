@@ -22,7 +22,7 @@ public class Transaction : BaseEntity
 
     public string? UserId { get; set; }
 
-    [JsonIgnore] public IdentityUser? User { get; set; }
+    [JsonIgnore] public ApplicationUser? User { get; set; }
 
     public void SetPaid()
     {

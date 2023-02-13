@@ -12,6 +12,8 @@ public class UserOutDto
     public DateTime? LockoutEnd { get; set; }
     public bool LockoutEnabled { get; set; }
     public int AccessFailedCount { get; set; }
+    
+    public List<string>? Roles { get; set; }
 }
 
 public class UserInDto
@@ -27,4 +29,5 @@ public class UserInDto
     public int AccessFailedCount { get; set; }
     
     public string? NewPassword { get; set; }
+    public List<string>? NewRoles { get; set; }
 }

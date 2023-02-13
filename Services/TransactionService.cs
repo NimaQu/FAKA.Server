@@ -6,9 +6,9 @@ namespace FAKA.Server.Services;
 
 public class TransactionService
 {
-    private readonly FakaContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public TransactionService(FakaContext context)
+    public TransactionService(ApplicationDbContext context)
     {
         _context = context;
     }

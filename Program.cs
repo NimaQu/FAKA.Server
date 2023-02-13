@@ -4,6 +4,7 @@ using FAKA.Server;
 using FAKA.Server.Auth;
 using FAKA.Server.Data;
 using FAKA.Server.Filters;
+using FAKA.Server.Models;
 using FAKA.Server.Payment;
 using FAKA.Server.Payment.Gateways;
 using FAKA.Server.Services;
@@ -21,12 +22,12 @@ var configuration = builder.Configuration;
 // Add services to the container.
 
 // For Entity Framework
-builder.Services.AddDbContext<FakaContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("FakaContext") ??
-                         throw new InvalidOperationException("Connection string 'fakaContext' not found.")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDbContext") ??
+                         throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.")));
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         //password settings
         options.Password.RequireDigit = false;
@@ -35,7 +36,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
     })
-    .AddEntityFrameworkStores<FakaContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 // Adding Authentication

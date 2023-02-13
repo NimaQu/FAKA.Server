@@ -21,7 +21,7 @@ public class Order : BaseEntity
 
     public string? UserId { get; set; }
 
-    [JsonIgnore] public IdentityUser? User { get; set; }
+    [JsonIgnore] public ApplicationUser? User { get; set; }
     
     public List<AssignedKey>? AssignedKeys { get; set; }
 

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FAKA.Server.Migrations
 {
-    [DbContext(typeof(FakaContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     partial class FakaContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -41,7 +41,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Announcements");
+                    b.ToTable("Announcements", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.AssignedKey", b =>
@@ -73,7 +73,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AssignedKey");
+                    b.ToTable("AssignedKey", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.Gateway", b =>
@@ -102,7 +102,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gateway");
+                    b.ToTable("Gateway", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.Key", b =>
@@ -135,7 +135,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Key");
+                    b.ToTable("Key", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.Order", b =>
@@ -181,7 +181,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.Product", b =>
@@ -225,7 +225,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasIndex("ProductGroupId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.ProductGroup", b =>
@@ -252,7 +252,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductGroup");
+                    b.ToTable("ProductGroup", (string)null);
                 });
 
             modelBuilder.Entity("FAKA.Server.Models.Transaction", b =>
@@ -303,7 +303,7 @@ namespace FAKA.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Transaction");
+                    b.ToTable("Transaction", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

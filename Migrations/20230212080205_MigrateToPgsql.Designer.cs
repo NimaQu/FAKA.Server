@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FAKA.Server.Migrations
 {
-    [DbContext(typeof(FakaContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20230212080205_MigrateToPgsql")]
     partial class MigrateToPgsql
     {
